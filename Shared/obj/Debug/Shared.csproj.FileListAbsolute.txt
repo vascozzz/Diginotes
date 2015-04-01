@@ -1,0 +1,5 @@
+C:\Programming\C#\Diginotes\Shared\bin\Debug\Shared.dll
+C:\Programming\C#\Diginotes\Shared\bin\Debug\Shared.pdb
+C:\Programming\C#\Diginotes\Shared\obj\Debug\Shared.dll
+C:\Programming\C#\Diginotes\Shared\obj\Debug\Shared.pdb
+C:\Programming\C#\Diginotes\Shared\obj\Debug\Shared.csprojResolveAssemblyReference.cache
