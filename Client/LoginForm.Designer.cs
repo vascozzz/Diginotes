@@ -1,6 +1,6 @@
 ﻿namespace Client
 {
-    partial class MainForm
+    partial class LoginForm
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,7 @@
             this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
             this.metroTextBox2 = new MetroFramework.Controls.MetroTextBox();
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
+            this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
             this.SuspendLayout();
             // 
             // metroLabel1
@@ -94,22 +95,38 @@
             this.metroButton1.UseSelectable = true;
             this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
             // 
-            // MainForm
+            // metroLabel3
             // 
+            this.metroLabel3.AutoSize = true;
+            this.metroLabel3.ForeColor = System.Drawing.Color.Maroon;
+            this.metroLabel3.Location = new System.Drawing.Point(246, 128);
+            this.metroLabel3.Name = "metroLabel3";
+            this.metroLabel3.Size = new System.Drawing.Size(191, 19);
+            this.metroLabel3.Style = MetroFramework.MetroColorStyle.Magenta;
+            this.metroLabel3.TabIndex = 5;
+            this.metroLabel3.Text = "Wrong username or password!";
+            this.metroLabel3.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroLabel3.UseCustomForeColor = true;
+            this.metroLabel3.Visible = false;
+            // 
+            // LoginForm
+            // 
+            this.AcceptButton = this.metroButton1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackImagePadding = new System.Windows.Forms.Padding(200, 10, 0, 0);
             this.BackMaxSize = 50;
             this.ClientSize = new System.Drawing.Size(492, 219);
+            this.Controls.Add(this.metroLabel3);
             this.Controls.Add(this.metroButton1);
             this.Controls.Add(this.metroTextBox2);
             this.Controls.Add(this.metroLabel2);
             this.Controls.Add(this.metroTextBox1);
             this.Controls.Add(this.metroLabel1);
-            this.Name = "MainForm";
+            this.Name = "LoginForm";
             this.Resizable = false;
             this.Style = MetroFramework.MetroColorStyle.Green;
-            this.Text = "Diginotes Client";
+            this.Text = "Diginotes - Welcome";
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -123,6 +140,7 @@
         private MetroFramework.Controls.MetroLabel metroLabel2;
         private MetroFramework.Controls.MetroTextBox metroTextBox2;
         private MetroFramework.Controls.MetroButton metroButton1;
+        private MetroFramework.Controls.MetroLabel metroLabel3;
     }
 }
 

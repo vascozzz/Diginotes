@@ -19,8 +19,9 @@ C:\Programming\C#\Diginotes\Client\bin\Debug\MetroFramework.Fonts.dll
 C:\Programming\C#\Diginotes\Client\bin\Debug\Shared.dll
 C:\Programming\C#\Diginotes\Client\bin\Debug\Shared.pdb
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Programming\C#\Diginotes\Client\obj\Debug\Client.MainForm.resources
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.Properties.Resources.resources
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.csproj.GenerateResource.Cache
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.exe
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.pdb
+C:\Programming\C#\Diginotes\Client\obj\Debug\Client.LoginForm.resources
+C:\Programming\C#\Diginotes\Client\obj\Debug\Client.AppForm.resources

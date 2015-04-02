@@ -15,8 +15,6 @@ namespace Client
 
         public Client()
         {
-            Debug.WriteLine("Client constructor called");
-
             RemotingConfiguration.Configure("Client.exe.config", false);
             inter = new Intermediate();
             inter.InitTrigger += OnFireEvent;
@@ -27,29 +25,19 @@ namespace Client
 
         public bool Login(string nickname, string password) 
         {
-            bool loginResult = remObj.Login(nickname, password);
-
-            if (!loginResult)
-            {
-                Debug.WriteLine("Login nao deu");
-            }
-            else
-            {
-                Debug.WriteLine("Yaaay");
-            }
-
-            return loginResult;
+            return remObj.Login(nickname, password);
         }
 
         public void Disconnect()
         {
+            Debug.WriteLine("Disconnect called.");
             remObj.InitTrigger -= inter.FireEvent;
             inter.InitTrigger -= OnFireEvent;
         }
 
         public void OnFireEvent()
         {
-            Debug.WriteLine("Event Fired");
+            Debug.WriteLine("Event fired.");
         }
 
         [STAThread]
@@ -59,34 +47,7 @@ namespace Client
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(client));
+            Application.Run(new LoginForm(client));
         }
-    }
-}
-
-class GetRemote
-{
-    private static IDictionary wellKnownTypes;
-
-    public static object New(Type type)
-    {
-        if (wellKnownTypes == null)
-            InitTypeCache();
-        WellKnownClientTypeEntry entry = (WellKnownClientTypeEntry)wellKnownTypes[type];
-        if (entry == null)
-            throw new RemotingException("Type not found!");
-        return Activator.GetObject(type, entry.ObjectUrl);
-    }
-
-    public static void InitTypeCache()
-    {
-        Hashtable types = new Hashtable();
-        foreach (WellKnownClientTypeEntry entry in RemotingConfiguration.GetRegisteredWellKnownClientTypes())
-        {
-            if (entry.ObjectType == null)
-                throw new RemotingException("A configured type could not be found!");
-            types.Add(entry.ObjectType, entry);
-        }
-        wellKnownTypes = types;
     }
 }
