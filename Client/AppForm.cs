@@ -14,16 +14,18 @@ namespace Client
     public partial class AppForm : MetroForm
     {
         private MetroForm parent;
+        private Client client;
 
         public AppForm()
         {
             InitializeComponent();
         }
 
-        public AppForm(MetroForm parent)
+        public AppForm(MetroForm parent, Client client)
         {
             InitializeComponent();
             this.parent = parent;
+            this.client = client;
 
             metroGrid1.ColumnCount = 4;
             metroGrid1.Columns[0].Name = "id";

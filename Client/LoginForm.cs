@@ -25,7 +25,7 @@ namespace Client
             this.client = client;
 
             // for testing purposes
-            //AppForm app = new AppForm(this);
+            //AppForm app = new AppForm(this), client;
             //app.Show();
         }
 
@@ -47,7 +47,7 @@ namespace Client
 
             if (login)
             {
-                AppForm app = new AppForm(this);
+                AppForm app = new AppForm(this, client);
                 app.Show();
                 this.Hide();
             }

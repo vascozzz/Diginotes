@@ -17,13 +17,6 @@ public class RemObj : MarshalByRefObject, IRemObj
 {
     public event EventHandler InitTrigger;
 
-    public String Ping()
-    {
-        return "Pong";
-    }
-
-    /* Actual implementation */
-
     private SQLiteConnection db;
 
     public RemObj()
@@ -33,16 +26,35 @@ public class RemObj : MarshalByRefObject, IRemObj
         db.Open();
     }
 
-    public bool Login(string nickname, string password)
+    public ClientData? Login(string nickname, string password)
     {
         Console.WriteLine("A client called Login().");
-        string sql = "select * from user where nickname = @nickname and password = @password";
+
+        string sql = "select user_id, balance from user where nickname = @nickname and password = @password";
         SQLiteCommand command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@nickname", nickname);
         command.Parameters.AddWithValue("@password", password);
-        int rowCount = Convert.ToInt32(command.ExecuteScalar());
+        SQLiteDataReader data = command.ExecuteReader();
 
-        return (rowCount > 0);
+        if (data.Read())
+        {
+            int user_id = Convert.ToInt32((long)data["user_id"]);
+            float balance = Convert.ToSingle((double)data["balance"]);
+
+            sql = "select count(*) as diginotes from diginote where owner_id = @owner_id";
+            command = new SQLiteCommand(sql, db);
+            command.Parameters.AddWithValue("@owner_id", user_id);
+            data = command.ExecuteReader();
+
+            data.Read();
+            int diginotes = Convert.ToInt32((long)data["diginotes"]);
+
+            float quotation = 1;
+
+            return new ClientData(user_id, balance, diginotes, quotation);
+        }
+        else
+            return null;
     }
 
     public bool Register(String name, String nickname, String password)

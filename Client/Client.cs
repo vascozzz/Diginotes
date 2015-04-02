@@ -12,6 +12,7 @@ namespace Client
     {
         private IRemObj remObj;
         private Intermediate inter;
+        private ClientData clientData;
 
         public Client()
         {
@@ -23,9 +24,18 @@ namespace Client
             remObj.InitTrigger += inter.FireEvent;
         }
 
-        public bool Login(string nickname, string password) 
+        public bool Login(string nickname, string password)
         {
-            return remObj.Login(nickname, password);
+            ClientData? data = remObj.Login(nickname, password);
+
+            if (!data.HasValue)
+                return false;
+
+            clientData = data.Value;
+
+            Debug.WriteLine(clientData.user_id + " " + clientData.balance);
+
+            return true;
         }
 
         public void Disconnect()
