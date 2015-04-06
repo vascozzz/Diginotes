@@ -10,9 +10,20 @@ namespace Client
 {
     public class Client
     {
+        public ClientData clientData;
+
         private IRemObj remObj;
         private Intermediate inter;
-        private ClientData clientData;
+
+        [STAThread]
+        static void Main()
+        {
+            Client client = new Client();
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new LoginForm(client));
+        }
 
         public Client()
         {
@@ -29,18 +40,19 @@ namespace Client
             ClientData? data = remObj.Login(nickname, password);
 
             if (!data.HasValue)
+            {
                 return false;
-
-            clientData = data.Value;
-
-            Debug.WriteLine(clientData.user_id + " " + clientData.balance);
-
-            return true;
+            }
+            else
+            {
+                clientData = data.Value;
+                return true;
+            }          
         }
 
         public void Disconnect()
         {
-            Debug.WriteLine("Disconnect called.");
+            Debug.WriteLine("Client disconnected successfully.");
             remObj.InitTrigger -= inter.FireEvent;
             inter.InitTrigger -= OnFireEvent;
         }
@@ -49,15 +61,6 @@ namespace Client
         {
             Debug.WriteLine("Event fired.");
         }
-
-        [STAThread]
-        static void Main()
-        {
-            Client client = new Client();
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginForm(client));
-        }
+        
     }
 }

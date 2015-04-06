@@ -28,72 +28,72 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.metroTextBox1 = new MetroFramework.Controls.MetroTextBox();
-            this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
-            this.metroTextBox2 = new MetroFramework.Controls.MetroTextBox();
-            this.metroButton1 = new MetroFramework.Controls.MetroButton();
+            this.usernameLabel = new MetroFramework.Controls.MetroLabel();
+            this.usernameText = new MetroFramework.Controls.MetroTextBox();
+            this.passwordLabel = new MetroFramework.Controls.MetroLabel();
+            this.passwordText = new MetroFramework.Controls.MetroTextBox();
+            this.loginBtn = new MetroFramework.Controls.MetroButton();
             this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
             this.SuspendLayout();
             // 
-            // metroLabel1
+            // usernameLabel
             // 
-            this.metroLabel1.AutoSize = true;
-            this.metroLabel1.Location = new System.Drawing.Point(23, 86);
-            this.metroLabel1.Name = "metroLabel1";
-            this.metroLabel1.Size = new System.Drawing.Size(71, 19);
-            this.metroLabel1.TabIndex = 0;
-            this.metroLabel1.Text = "Username:";
-            this.metroLabel1.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.usernameLabel.AutoSize = true;
+            this.usernameLabel.Location = new System.Drawing.Point(23, 86);
+            this.usernameLabel.Name = "usernameLabel";
+            this.usernameLabel.Size = new System.Drawing.Size(71, 19);
+            this.usernameLabel.TabIndex = 0;
+            this.usernameLabel.Text = "Username:";
+            this.usernameLabel.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // metroTextBox1
+            // usernameText
             // 
-            this.metroTextBox1.Lines = new string[0];
-            this.metroTextBox1.Location = new System.Drawing.Point(113, 86);
-            this.metroTextBox1.MaxLength = 32767;
-            this.metroTextBox1.Name = "metroTextBox1";
-            this.metroTextBox1.PasswordChar = '\0';
-            this.metroTextBox1.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.metroTextBox1.SelectedText = "";
-            this.metroTextBox1.Size = new System.Drawing.Size(127, 23);
-            this.metroTextBox1.TabIndex = 1;
-            this.metroTextBox1.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroTextBox1.UseSelectable = true;
+            this.usernameText.Lines = new string[0];
+            this.usernameText.Location = new System.Drawing.Point(113, 86);
+            this.usernameText.MaxLength = 32767;
+            this.usernameText.Name = "usernameText";
+            this.usernameText.PasswordChar = '\0';
+            this.usernameText.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.usernameText.SelectedText = "";
+            this.usernameText.Size = new System.Drawing.Size(127, 23);
+            this.usernameText.TabIndex = 1;
+            this.usernameText.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.usernameText.UseSelectable = true;
             // 
-            // metroLabel2
+            // passwordLabel
             // 
-            this.metroLabel2.AutoSize = true;
-            this.metroLabel2.Location = new System.Drawing.Point(27, 128);
-            this.metroLabel2.Name = "metroLabel2";
-            this.metroLabel2.Size = new System.Drawing.Size(66, 19);
-            this.metroLabel2.TabIndex = 2;
-            this.metroLabel2.Text = "Password:";
-            this.metroLabel2.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.passwordLabel.AutoSize = true;
+            this.passwordLabel.Location = new System.Drawing.Point(27, 128);
+            this.passwordLabel.Name = "passwordLabel";
+            this.passwordLabel.Size = new System.Drawing.Size(66, 19);
+            this.passwordLabel.TabIndex = 2;
+            this.passwordLabel.Text = "Password:";
+            this.passwordLabel.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // metroTextBox2
+            // passwordText
             // 
-            this.metroTextBox2.Lines = new string[0];
-            this.metroTextBox2.Location = new System.Drawing.Point(113, 128);
-            this.metroTextBox2.MaxLength = 32767;
-            this.metroTextBox2.Name = "metroTextBox2";
-            this.metroTextBox2.PasswordChar = '*';
-            this.metroTextBox2.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.metroTextBox2.SelectedText = "";
-            this.metroTextBox2.Size = new System.Drawing.Size(127, 23);
-            this.metroTextBox2.TabIndex = 3;
-            this.metroTextBox2.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroTextBox2.UseSelectable = true;
+            this.passwordText.Lines = new string[0];
+            this.passwordText.Location = new System.Drawing.Point(113, 128);
+            this.passwordText.MaxLength = 32767;
+            this.passwordText.Name = "passwordText";
+            this.passwordText.PasswordChar = '*';
+            this.passwordText.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.passwordText.SelectedText = "";
+            this.passwordText.Size = new System.Drawing.Size(127, 23);
+            this.passwordText.TabIndex = 3;
+            this.passwordText.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.passwordText.UseSelectable = true;
             // 
-            // metroButton1
+            // loginBtn
             // 
-            this.metroButton1.Location = new System.Drawing.Point(113, 169);
-            this.metroButton1.Name = "metroButton1";
-            this.metroButton1.Size = new System.Drawing.Size(127, 23);
-            this.metroButton1.TabIndex = 4;
-            this.metroButton1.Text = "Login";
-            this.metroButton1.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroButton1.UseSelectable = true;
-            this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
+            this.loginBtn.Location = new System.Drawing.Point(113, 169);
+            this.loginBtn.Name = "loginBtn";
+            this.loginBtn.Size = new System.Drawing.Size(127, 23);
+            this.loginBtn.TabIndex = 4;
+            this.loginBtn.Text = "Login";
+            this.loginBtn.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.loginBtn.UseSelectable = true;
+            this.loginBtn.Click += new System.EventHandler(this.metroButton1_Click);
             // 
             // metroLabel3
             // 
@@ -111,18 +111,18 @@
             // 
             // LoginForm
             // 
-            this.AcceptButton = this.metroButton1;
+            this.AcceptButton = this.loginBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackImagePadding = new System.Windows.Forms.Padding(200, 10, 0, 0);
             this.BackMaxSize = 50;
             this.ClientSize = new System.Drawing.Size(492, 219);
             this.Controls.Add(this.metroLabel3);
-            this.Controls.Add(this.metroButton1);
-            this.Controls.Add(this.metroTextBox2);
-            this.Controls.Add(this.metroLabel2);
-            this.Controls.Add(this.metroTextBox1);
-            this.Controls.Add(this.metroLabel1);
+            this.Controls.Add(this.loginBtn);
+            this.Controls.Add(this.passwordText);
+            this.Controls.Add(this.passwordLabel);
+            this.Controls.Add(this.usernameText);
+            this.Controls.Add(this.usernameLabel);
             this.Name = "LoginForm";
             this.Resizable = false;
             this.Style = MetroFramework.MetroColorStyle.Green;
@@ -135,11 +135,11 @@
 
         #endregion
 
-        private MetroFramework.Controls.MetroLabel metroLabel1;
-        private MetroFramework.Controls.MetroTextBox metroTextBox1;
-        private MetroFramework.Controls.MetroLabel metroLabel2;
-        private MetroFramework.Controls.MetroTextBox metroTextBox2;
-        private MetroFramework.Controls.MetroButton metroButton1;
+        private MetroFramework.Controls.MetroLabel usernameLabel;
+        private MetroFramework.Controls.MetroTextBox usernameText;
+        private MetroFramework.Controls.MetroLabel passwordLabel;
+        private MetroFramework.Controls.MetroTextBox passwordText;
+        private MetroFramework.Controls.MetroButton loginBtn;
         private MetroFramework.Controls.MetroLabel metroLabel3;
     }
 }

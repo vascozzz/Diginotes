@@ -16,6 +16,10 @@ namespace Client
         private MetroForm parent;
         private Client client;
 
+        /* temporary placeholders */
+        private int diginotesAvailable;
+        private float balanceAvailable;
+
         public AppForm()
         {
             InitializeComponent();
@@ -26,6 +30,20 @@ namespace Client
             InitializeComponent();
             this.parent = parent;
             this.client = client;
+
+            nameText.Text += client.clientData.name;
+            quotationText.Text = client.clientData.quotation.ToString() + "€ each";
+            quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
+
+            /* temporary placeholders */
+            diginotesAvailable = client.clientData.diginotes;
+            balanceAvailable = client.clientData.balance;
+
+            diginotesText.Text = diginotesAvailable.ToString();
+            diginotesAvailableText.Text = diginotesAvailable.ToString();
+
+            balanceText.Text = balanceAvailable.ToString() + "€";
+            balanceAvailableText.Text = balanceAvailable.ToString() + "€";
 
             metroGrid1.ColumnCount = 4;
             metroGrid1.Columns[0].Name = "id";
@@ -50,6 +68,26 @@ namespace Client
             if (e.CloseReason == CloseReason.WindowsShutDown) return;
 
             parent.Close();
+        }
+
+        private void buyBtn_Click(object sender, EventArgs e)
+        {
+            int buyAmount = 0;
+            float balanceNeeded = 0f;
+
+            buyError.Visible = true;
+
+            try
+            {
+                buyAmount = Convert.ToInt32(buyText);
+            }
+            catch (Exception err)
+            {
+                buyError.Visible = true;
+                return;
+            }
+
+            
         }
     }
 }

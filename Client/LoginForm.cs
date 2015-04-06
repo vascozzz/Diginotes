@@ -12,7 +12,7 @@ namespace Client
 {
     public partial class LoginForm : MetroForm
     {
-        Client client;
+        private Client client;
 
         public LoginForm()
         {
@@ -23,10 +23,6 @@ namespace Client
         {
             InitializeComponent();
             this.client = client;
-
-            // for testing purposes
-            //AppForm app = new AppForm(this), client;
-            //app.Show();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -40,8 +36,8 @@ namespace Client
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            string nickname = metroTextBox1.Text;
-            string password = metroTextBox2.Text;
+            string nickname = usernameText.Text;
+            string password = passwordText.Text;
 
             bool login = client.Login(nickname, password);
 

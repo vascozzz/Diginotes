@@ -29,13 +29,15 @@ public class Intermediate : MarshalByRefObject
 public struct ClientData
 {
     public int user_id;
+    public string name;
     public float balance;
     public int diginotes;
     public float quotation;
 
-    public ClientData(int user_id, float balance, int diginotes, float quotation) 
+    public ClientData(int user_id, string name, float balance, int diginotes, float quotation) 
     {
         this.user_id = user_id;
+        this.name = name;
         this.balance = balance;
         this.diginotes = diginotes;
         this.quotation = quotation;
