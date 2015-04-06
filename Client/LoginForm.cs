@@ -49,7 +49,7 @@ namespace Client
             }
             else
             {
-                metroLabel3.Visible = true;
+                passwordError.Visible = true;
             }
         }
     }

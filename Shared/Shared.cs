@@ -34,6 +34,9 @@ public struct ClientData
     public int diginotes;
     public float quotation;
 
+    public int diginotesAvlb;
+    public float balanceAvlb;
+
     public ClientData(int user_id, string name, float balance, int diginotes, float quotation) 
     {
         this.user_id = user_id;
@@ -41,5 +44,9 @@ public struct ClientData
         this.balance = balance;
         this.diginotes = diginotes;
         this.quotation = quotation;
+        this.diginotesAvlb = diginotes;
+        this.balanceAvlb = balance;
     }
 }
+
+public enum ExchangeType { BUY, SELL };

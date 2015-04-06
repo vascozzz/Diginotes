@@ -76,6 +76,7 @@ public class RemObj : MarshalByRefObject, IRemObj
     public void Trigger()
     {
         Console.WriteLine("A client called Trigger().");
+
         InitTrigger();
     }
 }

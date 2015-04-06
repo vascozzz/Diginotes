@@ -33,7 +33,7 @@
             this.passwordLabel = new MetroFramework.Controls.MetroLabel();
             this.passwordText = new MetroFramework.Controls.MetroTextBox();
             this.loginBtn = new MetroFramework.Controls.MetroButton();
-            this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
+            this.passwordError = new MetroFramework.Controls.MetroLabel();
             this.SuspendLayout();
             // 
             // usernameLabel
@@ -95,19 +95,19 @@
             this.loginBtn.UseSelectable = true;
             this.loginBtn.Click += new System.EventHandler(this.metroButton1_Click);
             // 
-            // metroLabel3
+            // passwordError
             // 
-            this.metroLabel3.AutoSize = true;
-            this.metroLabel3.ForeColor = System.Drawing.Color.Maroon;
-            this.metroLabel3.Location = new System.Drawing.Point(246, 128);
-            this.metroLabel3.Name = "metroLabel3";
-            this.metroLabel3.Size = new System.Drawing.Size(191, 19);
-            this.metroLabel3.Style = MetroFramework.MetroColorStyle.Magenta;
-            this.metroLabel3.TabIndex = 5;
-            this.metroLabel3.Text = "Wrong username or password!";
-            this.metroLabel3.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroLabel3.UseCustomForeColor = true;
-            this.metroLabel3.Visible = false;
+            this.passwordError.AutoSize = true;
+            this.passwordError.ForeColor = System.Drawing.Color.Maroon;
+            this.passwordError.Location = new System.Drawing.Point(246, 128);
+            this.passwordError.Name = "passwordError";
+            this.passwordError.Size = new System.Drawing.Size(191, 19);
+            this.passwordError.Style = MetroFramework.MetroColorStyle.Magenta;
+            this.passwordError.TabIndex = 5;
+            this.passwordError.Text = "Wrong username or password!";
+            this.passwordError.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.passwordError.UseCustomForeColor = true;
+            this.passwordError.Visible = false;
             // 
             // LoginForm
             // 
@@ -117,7 +117,7 @@
             this.BackImagePadding = new System.Windows.Forms.Padding(200, 10, 0, 0);
             this.BackMaxSize = 50;
             this.ClientSize = new System.Drawing.Size(492, 219);
-            this.Controls.Add(this.metroLabel3);
+            this.Controls.Add(this.passwordError);
             this.Controls.Add(this.loginBtn);
             this.Controls.Add(this.passwordText);
             this.Controls.Add(this.passwordLabel);
@@ -140,7 +140,7 @@
         private MetroFramework.Controls.MetroLabel passwordLabel;
         private MetroFramework.Controls.MetroTextBox passwordText;
         private MetroFramework.Controls.MetroButton loginBtn;
-        private MetroFramework.Controls.MetroLabel metroLabel3;
+        private MetroFramework.Controls.MetroLabel passwordError;
     }
 }
 
