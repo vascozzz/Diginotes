@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework;
 using MetroFramework.Forms;
 
 namespace Client
@@ -28,6 +29,7 @@ namespace Client
 
             this.parent = parent;
             this.client = client;
+            client.SetAppForm(this);
 
             nameText.Text += client.clientData.name;
             quotationText.Text = client.clientData.quotation.ToString() + "€ each";
@@ -109,6 +111,7 @@ namespace Client
             balanceAvailableText.Text = client.clientData.balanceAvlb.ToString() + "€";
 
             AddToHistory(ExchangeType.BUY, buyAmount);
+            client.RequestExchange(ExchangeType.BUY, buyAmount);
         }
 
         private void RequestSellExchange()
@@ -139,6 +142,7 @@ namespace Client
             diginotesAvailableText.Text = client.clientData.diginotesAvlb.ToString();
 
             AddToHistory(ExchangeType.SELL, sellAmount);
+            client.RequestExchange(ExchangeType.SELL, sellAmount);
         }
 
         private void buyBtn_Click(object sender, EventArgs e)
@@ -167,6 +171,12 @@ namespace Client
                 RequestSellExchange();
                 e.Handled = true;
             }
+        }
+
+        public void OnNewExchange()
+        {
+            //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
+            //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
         }
     }
 }

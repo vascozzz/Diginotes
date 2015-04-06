@@ -15,7 +15,7 @@ class Server
 
 public class RemObj : MarshalByRefObject, IRemObj
 {
-    public event EventHandler InitTrigger;
+    public event ExchangeHandler NewExchange;
     private SQLiteConnection db;
 
     public RemObj()
@@ -73,10 +73,11 @@ public class RemObj : MarshalByRefObject, IRemObj
         return true;
     }
 
-    public void Trigger()
+    public bool RequestExchange(ExchangeType exchangeType, int diginotes)
     {
-        Console.WriteLine("A client called Trigger().");
+        Console.WriteLine("A client called RequestExchange().");
 
-        InitTrigger();
+        NewExchange();
+        return true;
     }
 }

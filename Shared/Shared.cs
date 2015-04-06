@@ -4,24 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public delegate void EventHandler();
+public delegate void ExchangeHandler();
 
 public interface IRemObj
 {
-    event EventHandler InitTrigger;
+    event ExchangeHandler NewExchange;
 
-    void Trigger();
     ClientData? Login(string nickname, string password);
     bool Register(String name, String nickname, String password);
+    bool RequestExchange(ExchangeType exchangeType, int diginotes);
 }
 
 public class Intermediate : MarshalByRefObject
 {
-    public event EventHandler InitTrigger;
+    public event ExchangeHandler NewExchange;
 
-    public void FireEvent()
+    public void TriggerNewExchange()
     {
-        InitTrigger();
+        NewExchange();
     }
 }
 

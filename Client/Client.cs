@@ -14,6 +14,7 @@ namespace Client
 
         private IRemObj remObj;
         private Intermediate inter;
+        private AppForm appForm;
 
         [STAThread]
         static void Main()
@@ -29,10 +30,15 @@ namespace Client
         {
             RemotingConfiguration.Configure("Client.exe.config", false);
             inter = new Intermediate();
-            inter.InitTrigger += OnFireEvent;
+            inter.NewExchange += OnNewExchange;
 
             remObj = (IRemObj)GetRemote.New(typeof(IRemObj));
-            remObj.InitTrigger += inter.FireEvent;
+            remObj.NewExchange += inter.TriggerNewExchange;
+        }
+
+        public void SetAppForm(AppForm appForm)
+        {
+            this.appForm = appForm;
         }
 
         public bool Login(string nickname, string password)
@@ -50,16 +56,27 @@ namespace Client
             }          
         }
 
+        public void RequestExchange(ExchangeType exchangeType, int diginotes)
+        {
+            remObj.RequestExchange(exchangeType, diginotes);
+        }
+
         public void Disconnect()
         {
             Debug.WriteLine("Client disconnected successfully.");
-            remObj.InitTrigger -= inter.FireEvent;
-            inter.InitTrigger -= OnFireEvent;
+            remObj.NewExchange -= inter.TriggerNewExchange;
+            inter.NewExchange -= OnNewExchange;
         }
 
-        public void OnFireEvent()
+        public void OnNewExchange()
         {
-            Debug.WriteLine("Event fired.");
+            Debug.WriteLine("Some client requested a new exchange.");
+
+            // disable events on login screen
+            if (appForm != null)
+            {
+                appForm.OnNewExchange();
+            }
         }
         
     }
