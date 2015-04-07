@@ -355,7 +355,7 @@
 
         private MetroFramework.Controls.MetroGrid historyGrid;
         private MetroFramework.Controls.MetroButton buyBtn;
-        private MetroFramework.Controls.MetroLabel nameText;
+        public MetroFramework.Controls.MetroLabel nameText;
         private MetroFramework.Controls.MetroLabel diginotesLabel;
         private MetroFramework.Controls.MetroLabel balanceLabel;
         private MetroFramework.Controls.MetroLabel diginotesText;

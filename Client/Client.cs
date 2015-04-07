@@ -75,7 +75,7 @@ namespace Client
             // disable events on login screen
             if (appForm != null)
             {
-                appForm.OnNewExchange();
+                
             }
         }
         

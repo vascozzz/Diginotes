@@ -80,4 +80,33 @@ public class RemObj : MarshalByRefObject, IRemObj
         NewExchange();
         return true;
     }
+
+    private void MakeTransfer(int buyerId, int sellerId, int diginotes, float value)
+    {
+        using (var command = new SQLiteCommand(db))
+        {
+            using (var transaction = db.BeginTransaction())
+            {
+                command.CommandText = "UPDATE diginote SET owner_id = @buyerId WHERE diginote_id IN (SELECT diginote_id FROM diginote where owner_id = @sellerId LIMIT @diginotes)";
+                command.Parameters.AddWithValue("@buyerId", buyerId);
+                command.Parameters.AddWithValue("@sellerId", sellerId);
+                command.Parameters.AddWithValue("@diginotes", diginotes);
+                command.ExecuteNonQuery();
+
+                command.Parameters.Clear();
+                command.CommandText = "UPDATE user SET balance = balance - @value WHERE user_id = @buyerId";
+                command.Parameters.AddWithValue("@buyerId", buyerId);
+                command.Parameters.AddWithValue("@value", value);
+                command.ExecuteNonQuery();
+
+                command.Parameters.Clear();
+                command.CommandText = "UPDATE user SET balance = balance + @value WHERE user_id = @sellerId";
+                command.Parameters.AddWithValue("@sellerId", sellerId);
+                command.Parameters.AddWithValue("@value", value);
+                command.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+        }
+    }
 }
