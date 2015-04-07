@@ -8,10 +8,13 @@ using System.Diagnostics;
 
 namespace Client
 {
+    /* Client. Entity responsible for handling all the client data and respective communication with the server. */
     public class Client
     {
-        public ClientData clientData;
+        // container for client data
+        public ClientData data;
 
+        // private pointers
         private IRemObj remObj;
         private Intermediate inter;
         private AppForm appForm;
@@ -26,6 +29,7 @@ namespace Client
             Application.Run(new LoginForm(client));
         }
 
+        /* When starting, a client should automatically onnect to the server. */
         public Client()
         {
             RemotingConfiguration.Configure("Client.exe.config", false);
@@ -36,31 +40,41 @@ namespace Client
             remObj.NewExchange += inter.TriggerNewExchange;
         }
 
+        /* Sets a pointer to the form where all info is displayed so that it can be updated on events' callbacks. */
         public void SetAppForm(AppForm appForm)
         {
             this.appForm = appForm;
         }
 
+        /* Login, server returns null when user is not found. */
         public bool Login(string nickname, string password)
         {
-            ClientData? data = remObj.Login(nickname, password);
+            ClientData? loginData = remObj.Login(nickname, password);
 
-            if (!data.HasValue)
+            if (!loginData.HasValue)
             {
                 return false;
             }
             else
             {
-                clientData = data.Value;
+                data = loginData.Value;
                 return true;
             }          
         }
 
+        /* Requests the server to register a new exchange (either buying or selling diginotes). */
         public void RequestExchange(ExchangeType exchangeType, int diginotes)
         {
-            remObj.RequestExchange(exchangeType, diginotes);
+            ExchangeData exchangeData = remObj.RequestExchange(data.user_id, exchangeType, diginotes);
+
+            // should create a new exchange and update form
+            if (appForm != null) 
+            {
+
+            }
         }
 
+        /* When disconnecting, clients should unsubscribe from server events. */
         public void Disconnect()
         {
             Debug.WriteLine("Client disconnected successfully.");
@@ -68,12 +82,13 @@ namespace Client
             inter.NewExchange -= OnNewExchange;
         }
 
+        /* Callback triggered when the server pairs up two exchanges. */
         public void OnNewExchange()
         {
             Debug.WriteLine("Some client requested a new exchange.");
 
-            // disable events on login screen
-            if (appForm != null)
+            // should update user's exchanges if needed 
+            if (appForm != null) // disables events on login screen
             {
                 
             }

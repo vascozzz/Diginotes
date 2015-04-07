@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Runtime.Remoting;
 using System.Data.SQLite;
+using System.Collections.Generic;
 
 class Server
 {
@@ -15,9 +16,13 @@ class Server
 
 public class RemObj : MarshalByRefObject, IRemObj
 {
+    // public events
     public event ExchangeHandler NewExchange;
+
+    // private vars
     private SQLiteConnection db;
 
+    /* Open database connection once server is initiated by the first client. */
     public RemObj()
     {
         Console.WriteLine("Server constructor called.");
@@ -26,10 +31,12 @@ public class RemObj : MarshalByRefObject, IRemObj
         db.Open();
     }
 
+    /* On login, should return all client info (including number of diginotes owned and previous exchanges). */
     public ClientData? Login(string nickname, string password)
     {
         Console.WriteLine("A client called Login().");
 
+        // find user
         string sql = "SELECT user_id, name, balance FROM USER where nickname = @nickname AND password = @password";
         SQLiteCommand command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@nickname", nickname);
@@ -38,20 +45,42 @@ public class RemObj : MarshalByRefObject, IRemObj
 
         if (data.Read())
         {
-            int user_id = Convert.ToInt32((long)data["user_id"]);
+            int user_id = Convert.ToInt32((long) data["user_id"]);
             string name = (string) data["name"];
-            float balance = Convert.ToSingle((double)data["balance"]);
+            float balance = Convert.ToSingle((double) data["balance"]);
+            float quotation = 1;
 
+            // find number of diginotes owned
             sql = "SELECT COUNT(*) AS diginotes FROM diginote WHERE owner_id = @owner_id";
             command = new SQLiteCommand(sql, db);
             command.Parameters.AddWithValue("@owner_id", user_id);
             data = command.ExecuteReader();
-
             data.Read();
-            int diginotes = Convert.ToInt32((long)data["diginotes"]);
-            float quotation = 1;
 
-            return new ClientData(user_id, name, balance, diginotes, quotation);
+            int diginotes = Convert.ToInt32((long) data["diginotes"]);
+            
+            // find all previous exchanges
+            sql = "SELECT * FROM exchange where user_id = @user_id";
+            command = new SQLiteCommand(sql, db);
+            command.Parameters.AddWithValue("@user_id", user_id);
+            data = command.ExecuteReader();
+
+            List<ExchangeData> exchanges = new List<ExchangeData>();
+
+            // add them to an array that can be passed to the client data struct
+            while (data.Read())
+            {
+                int exchange_id = Convert.ToInt32((long) data["exchange_id"]);
+                ExchangeType type = (string) data["type"] == "BUY" ? ExchangeType.BUY : ExchangeType.SELL;
+                int exchange_diginotes = Convert.ToInt32((long) data["diginotes"]);
+                int diginotes_fulfilled = Convert.ToInt32((long) data["diginotes_fulfilled"]);
+                string created = (string) data["created"];
+
+                ExchangeData exchange = new ExchangeData(exchange_id, user_id, type, exchange_diginotes, diginotes_fulfilled, created);
+                exchanges.Add(exchange);
+            }
+
+            return new ClientData(user_id, name, balance, diginotes, quotation, exchanges);
         }
         else
         {
@@ -59,6 +88,7 @@ public class RemObj : MarshalByRefObject, IRemObj
         }         
     }
 
+    /* On register, should return all client info so user can be logged-in automatically. */
     public bool Register(String name, String nickname, String password)
     {
         Console.WriteLine("A client called Register().");
@@ -73,16 +103,42 @@ public class RemObj : MarshalByRefObject, IRemObj
         return true;
     }
 
-    public bool RequestExchange(ExchangeType exchangeType, int diginotes)
+    /* Registers a new exchange (either buying or selling diginotes) requested by a client. Returns registration id. */
+    public ExchangeData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes)
     {
         Console.WriteLine("A client called RequestExchange().");
 
+        string created = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        int diginotes_fulfilled = 0;
+        int exchange_id = -1;
+
+        // insert new exchange
+        string sql = "INSERT INTO exchange VALUES(null, @user_id, @type, @diginotes, @diginotes_fulfilled, @created)";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
+        command.Parameters.AddWithValue("@type", exchangeType.ToString());
+        command.Parameters.AddWithValue("@diginotes", diginotes);
+        command.Parameters.AddWithValue("@diginotes_fulfilled", diginotes_fulfilled);
+        command.Parameters.AddWithValue("@created", created);
+        command.ExecuteNonQuery();
+
+        // sqlite has no method of getting new id when inserting data, so we need to grab it manually
+        sql = "SELECT exchange_id FROM exchange WHERE user_id = @user_id ORDER BY exchange_id DESC LIMIT 1";
+        command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
+        SQLiteDataReader data = command.ExecuteReader();
+        data.Read();
+        exchange_id = Convert.ToInt32((long) data["exchange_id"]);
+
+        // trigger event and return exchange data
         NewExchange();
-        return true;
+        return new ExchangeData(exchange_id, user_id, exchangeType, diginotes, diginotes_fulfilled, created);
     }
 
+    /* Used by the server when detecting exchange matches to make the transfer of digicoins/balances between clients. */
     private void MakeTransfer(int buyerId, int sellerId, int diginotes, float value)
     {
+        // since a transfer involves multiple sql commands, it should be wrapped in a transaction
         using (var command = new SQLiteCommand(db))
         {
             using (var transaction = db.BeginTransaction())
@@ -104,6 +160,8 @@ public class RemObj : MarshalByRefObject, IRemObj
                 command.Parameters.AddWithValue("@sellerId", sellerId);
                 command.Parameters.AddWithValue("@value", value);
                 command.ExecuteNonQuery();
+
+                // TODO: update exchanges table
 
                 transaction.Commit();
             }

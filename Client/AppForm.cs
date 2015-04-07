@@ -31,15 +31,15 @@ namespace Client
             this.client = client;
             client.SetAppForm(this);
 
-            nameText.Text += client.clientData.name;
-            quotationText.Text = client.clientData.quotation.ToString() + "€ each";
+            nameText.Text += client.data.name;
+            quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
 
-            diginotesText.Text = client.clientData.diginotes.ToString();
-            diginotesAvailableText.Text = client.clientData.diginotesAvlb.ToString();
+            diginotesText.Text = client.data.diginotes.ToString();
+            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
 
-            balanceText.Text = client.clientData.balance.ToString() + "€";
-            balanceAvailableText.Text = client.clientData.balanceAvlb.ToString() + "€";
+            balanceText.Text = client.data.balance.ToString() + "€";
+            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
 
             historyGrid.ColumnCount = 5;
             historyGrid.Columns[0].Name = "id";
@@ -48,6 +48,8 @@ namespace Client
             historyGrid.Columns[3].Name = "fulfilled";
             historyGrid.Columns[4].Name = "created";
             historyCount = 0;
+
+            InitHistory();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -65,6 +67,37 @@ namespace Client
             sellError.Visible = false;
         }
 
+        private void InitHistory()
+        {
+            foreach (ExchangeData exchange in client.data.exchanges)
+            {
+                bool fulfilled = exchange.diginotes == exchange.diginotes_fulfilled;
+
+                if (!fulfilled)
+                {
+                    if (exchange.type == ExchangeType.BUY)
+                    {
+                        client.data.balanceAvlb -= (exchange.diginotes * client.data.quotation) - (exchange.diginotes_fulfilled);
+                    }
+                    else if (exchange.type == ExchangeType.SELL)
+                    {
+                        client.data.diginotesAvlb -= exchange.diginotes - exchange.diginotes_fulfilled;
+                    }
+                }
+                
+                historyGrid.Rows.Add();
+                historyGrid.Rows[historyCount].Cells[0].Value = exchange.exchange_id;
+                historyGrid.Rows[historyCount].Cells[1].Value = exchange.type.ToString();
+                historyGrid.Rows[historyCount].Cells[2].Value = exchange.diginotes;
+                historyGrid.Rows[historyCount].Cells[3].Value = fulfilled ? "yes" : "no";
+                historyGrid.Rows[historyCount].Cells[4].Value = exchange.created;
+                historyCount++;
+            }
+
+            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
+            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
+        }
+
         private void AddToHistory(ExchangeType exchangeType, int diginotes)
         {
             historyGrid.Rows.Add();
@@ -72,7 +105,7 @@ namespace Client
             historyGrid.Rows[historyCount].Cells[1].Value = exchangeType;
             historyGrid.Rows[historyCount].Cells[2].Value = diginotes;
             historyGrid.Rows[historyCount].Cells[3].Value = "no";
-            historyGrid.Rows[historyCount].Cells[4].Value = DateTime.Now.ToShortTimeString();
+            historyGrid.Rows[historyCount].Cells[4].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             historyCount++;
         }
 
@@ -91,7 +124,7 @@ namespace Client
             try
             {
                 buyAmount = Convert.ToInt32(buyText.Text);
-                balanceNeeded = client.clientData.quotation * buyAmount;
+                balanceNeeded = client.data.quotation * buyAmount;
             }
             catch (Exception err)
             {
@@ -100,15 +133,15 @@ namespace Client
                 return;
             }
 
-            if (buyAmount <= 0 || balanceNeeded > client.clientData.balanceAvlb)
+            if (buyAmount <= 0 || balanceNeeded > client.data.balanceAvlb)
             {
                 buyError.Text = "Please specify a valid number.";
                 buyError.Visible = true;
                 return;
             }
 
-            client.clientData.balanceAvlb -= balanceNeeded;
-            balanceAvailableText.Text = client.clientData.balanceAvlb.ToString() + "€";
+            client.data.balanceAvlb -= balanceNeeded;
+            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
 
             AddToHistory(ExchangeType.BUY, buyAmount);
             client.RequestExchange(ExchangeType.BUY, buyAmount);
@@ -131,15 +164,15 @@ namespace Client
                 return;
             }
 
-            if (sellAmount <= 0 || sellAmount > client.clientData.diginotesAvlb)
+            if (sellAmount <= 0 || sellAmount > client.data.diginotesAvlb)
             {
                 sellError.Text = "Please specify a valid number.";
                 sellError.Visible = true;
                 return;
             }
 
-            client.clientData.diginotesAvlb -= sellAmount;
-            diginotesAvailableText.Text = client.clientData.diginotesAvlb.ToString();
+            client.data.diginotesAvlb -= sellAmount;
+            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
 
             AddToHistory(ExchangeType.SELL, sellAmount);
             client.RequestExchange(ExchangeType.SELL, sellAmount);
