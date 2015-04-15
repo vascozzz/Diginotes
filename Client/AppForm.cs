@@ -211,6 +211,9 @@ namespace Client
             nameText.Text = "Some client initiated a new exchange";
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+
+            // run through client history, if ids match, update history row at index
+            // should also remember to check if user ids match before trying to do anything
         }
     }
 }

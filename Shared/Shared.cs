@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 public delegate void ExchangeHandler();
+public delegate void QuotationHandler();
 
 public interface IRemObj
 {
     event ExchangeHandler NewExchange;
+    event QuotationHandler NewQuotation;
 
     ClientData? Login(string nickname, string password);
     bool Register(String name, String nickname, String password);
@@ -18,6 +20,7 @@ public interface IRemObj
 public class Intermediate : MarshalByRefObject
 {
     public event ExchangeHandler NewExchange;
+    public event QuotationHandler NewQuotation;
 
     public void TriggerNewExchange()
     {

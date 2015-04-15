@@ -90,7 +90,7 @@ namespace Client
             // should update user's exchanges if needed 
             if (appForm != null) // disables events on login screen
             {
-                
+                // appForm.OnNewExchange();
             }
         }
         

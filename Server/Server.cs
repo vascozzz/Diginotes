@@ -18,9 +18,12 @@ public class RemObj : MarshalByRefObject, IRemObj
 {
     // public events
     public event ExchangeHandler NewExchange;
+    public event QuotationHandler NewQuotation;
 
     // private vars
     private SQLiteConnection db;
+    private float quotation = 1.0f;
+
 
     /* Open database connection once server is initiated by the first client. */
     public RemObj()
@@ -30,6 +33,7 @@ public class RemObj : MarshalByRefObject, IRemObj
         db = new SQLiteConnection("Data Source=diginote.sqlite;Version=3;");
         db.Open();
     }
+
 
     /* On login, should return all client info (including number of diginotes owned and previous exchanges). */
     public ClientData? Login(string nickname, string password)
@@ -88,6 +92,7 @@ public class RemObj : MarshalByRefObject, IRemObj
         }         
     }
 
+
     /* On register, should return all client info so user can be logged-in automatically. */
     public bool Register(String name, String nickname, String password)
     {
@@ -102,6 +107,7 @@ public class RemObj : MarshalByRefObject, IRemObj
 
         return true;
     }
+
 
     /* Registers a new exchange (either buying or selling diginotes) requested by a client. Returns registration id. */
     public ExchangeData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes)
@@ -132,36 +138,98 @@ public class RemObj : MarshalByRefObject, IRemObj
 
         // trigger event and return exchange data
         NewExchange();
-        return new ExchangeData(exchange_id, user_id, exchangeType, diginotes, diginotes_fulfilled, created);
+        ExchangeData newExchange = new ExchangeData(exchange_id, user_id, exchangeType, diginotes, diginotes_fulfilled, created);
+
+        FindMatch(newExchange);
+        return newExchange;
     }
 
-    /* Used by the server when detecting exchange matches to make the transfer of digicoins/balances between clients. */
-    private void MakeTransfer(int buyerId, int sellerId, int diginotes, float value)
+
+    /* Attempts to find a match between two exchanges. */
+    private void FindMatch(ExchangeData exchange)
     {
+        int diginotesNeeded = exchange.diginotes - exchange.diginotes_fulfilled;
+        int diginotesAvailable = 0;
+
+        ExchangeType matchingType = exchange.type == ExchangeType.BUY ? ExchangeType.SELL : ExchangeType.BUY;
+        ExchangeData matchingExchange = new ExchangeData(-1, -1, matchingType, 0, 0, "");
+
+        Console.WriteLine("Attempting to find a match for " + diginotesNeeded + " diginotes. Type is " + exchange.type + ".");
+        Console.WriteLine("Matching type is " + matchingType + ".");
+
+        // should later update so that owner =/= exchange.owner
+        string sql = "SELECT * FROM exchange where type = @matchingType AND diginotes - diginotes_fulfilled > 0 ORDER BY created ASC";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@matchingType", matchingType.ToString());
+        SQLiteDataReader data = command.ExecuteReader();
+
+        while (data.Read())
+        {
+            int exchange_id = Convert.ToInt32((long) data["exchange_id"]);
+            int user_id = Convert.ToInt32((long) data["user_id"]);
+            int exchange_diginotes = Convert.ToInt32((long) data["diginotes"]);
+            int diginotes_fulfilled = Convert.ToInt32((long) data["diginotes_fulfilled"]);
+            int diginotes_fortrade = exchange_diginotes - diginotes_fulfilled;
+            string created = (string) data["created"];
+
+            if (diginotes_fortrade > diginotesAvailable)
+            {
+                matchingExchange = new ExchangeData(exchange_id, user_id, matchingType, exchange_diginotes, diginotes_fulfilled, created);
+                diginotesAvailable = diginotes_fortrade;
+            }
+
+            if (diginotes_fortrade >= diginotesNeeded)
+            {
+                break;
+            }
+        }
+
+        Console.WriteLine("Found matching exchange! ID: " + matchingExchange.exchange_id + " for " + diginotesAvailable + " diginotes.");
+    }
+
+
+    /* Used by the server when detecting exchange matches to make the transfer of digicoins/balances between clients. */
+    private void MakeTransfer(ExchangeData buyExchange, ExchangeData sellExchange, int diginotes)
+    {
+        float transferValue = diginotes * quotation;
+
         // since a transfer involves multiple sql commands, it should be wrapped in a transaction
         using (var command = new SQLiteCommand(db))
         {
             using (var transaction = db.BeginTransaction())
             {
+                // update buy exchange
+                command.CommandText = "UPDATE exchange SET diginotes_fulfilled = diginotes_fulfilled + @diginotes WHERE exchange_id = @exchangeId";
+                command.Parameters.AddWithValue("@diginotes", diginotes);
+                command.Parameters.AddWithValue("@exchangeId", buyExchange.exchange_id);
+                command.ExecuteNonQuery();
+
+                // update sell exchange
+                command.CommandText = "UPDATE exchange SET diginotes_fulfilled = diginotes_fulfilled + @diginotes WHERE exchange_id = @exchangeId";
+                command.Parameters.AddWithValue("@diginotes", diginotes);
+                command.Parameters.AddWithValue("@exchangeId", sellExchange.exchange_id);
+                command.ExecuteNonQuery();
+
+                // update actual diginotes
                 command.CommandText = "UPDATE diginote SET owner_id = @buyerId WHERE diginote_id IN (SELECT diginote_id FROM diginote where owner_id = @sellerId LIMIT @diginotes)";
-                command.Parameters.AddWithValue("@buyerId", buyerId);
-                command.Parameters.AddWithValue("@sellerId", sellerId);
+                command.Parameters.AddWithValue("@buyerId", buyExchange.user_id);
+                command.Parameters.AddWithValue("@sellerId", sellExchange.user_id);
                 command.Parameters.AddWithValue("@diginotes", diginotes);
                 command.ExecuteNonQuery();
 
+                // update buyer balance
                 command.Parameters.Clear();
                 command.CommandText = "UPDATE user SET balance = balance - @value WHERE user_id = @buyerId";
-                command.Parameters.AddWithValue("@buyerId", buyerId);
-                command.Parameters.AddWithValue("@value", value);
+                command.Parameters.AddWithValue("@buyerId", buyExchange.user_id);
+                command.Parameters.AddWithValue("@value", transferValue);
                 command.ExecuteNonQuery();
 
+                // update seller balance
                 command.Parameters.Clear();
                 command.CommandText = "UPDATE user SET balance = balance + @value WHERE user_id = @sellerId";
-                command.Parameters.AddWithValue("@sellerId", sellerId);
-                command.Parameters.AddWithValue("@value", value);
+                command.Parameters.AddWithValue("@sellerId", sellExchange.user_id);
+                command.Parameters.AddWithValue("@value", transferValue);
                 command.ExecuteNonQuery();
-
-                // TODO: update exchanges table
 
                 transaction.Commit();
             }
