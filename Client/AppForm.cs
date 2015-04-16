@@ -35,12 +35,6 @@ namespace Client
             quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
 
-            diginotesText.Text = client.data.diginotes.ToString();
-            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
-
-            balanceText.Text = client.data.balance.ToString() + "€";
-            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
-
             historyGrid.ColumnCount = 6;
             historyGrid.Columns[0].Name = "id";
             historyGrid.Columns[1].Name = "type";
@@ -50,6 +44,7 @@ namespace Client
             historyGrid.Columns[5].Name = "created";
             historyCount = 0;
 
+            UpdateEconomy();
             InitHistory();
         }
 
@@ -72,32 +67,8 @@ namespace Client
         {
             foreach (ExchangeData exchange in client.data.exchanges)
             {
-                bool fulfilled = exchange.diginotes == exchange.diginotes_fulfilled;
-
-                if (!fulfilled)
-                {
-                    if (exchange.type == ExchangeType.BUY)
-                    {
-                        client.data.balanceAvlb -= (exchange.diginotes * client.data.quotation) - (exchange.diginotes_fulfilled);
-                    }
-                    else if (exchange.type == ExchangeType.SELL)
-                    {
-                        client.data.diginotesAvlb -= exchange.diginotes - exchange.diginotes_fulfilled;
-                    }
-                }
-                
-                historyGrid.Rows.Add();
-                historyGrid.Rows[historyCount].Cells[0].Value = exchange.exchange_id;
-                historyGrid.Rows[historyCount].Cells[1].Value = exchange.type.ToString();
-                historyGrid.Rows[historyCount].Cells[2].Value = exchange.diginotes;
-                historyGrid.Rows[historyCount].Cells[3].Value = exchange.diginotes_fulfilled;
-                historyGrid.Rows[historyCount].Cells[4].Value = fulfilled ? "yes" : "no";
-                historyGrid.Rows[historyCount].Cells[5].Value = exchange.created;
-                historyCount++;
+                AddToHistory(exchange);
             }
-
-            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
-            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
         }
 
         public void AddToHistory(ExchangeData exchange)
@@ -221,17 +192,32 @@ namespace Client
                 return;
             }
 
-            diginotesText.Text = client.data.diginotes.ToString();
-            balanceText.Text = client.data.balance.ToString();
-
             ExchangeData data = client.data.exchanges[index];
 
             historyGrid.Rows[index].Cells[3].Value = data.diginotes_fulfilled;
             historyGrid.Rows[index].Cells[4].Value = data.diginotes == data.diginotes_fulfilled ? "yes" : "no";
+
+            UpdateEconomy();
             
             // nameText.Text = "Some client initiated a new exchange";
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+        }
+
+        public void UpdateEconomy()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { UpdateEconomy(); });
+                return;
+            }
+
+
+            diginotesText.Text = client.data.diginotes.ToString();
+            diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
+
+            balanceText.Text = client.data.balance.ToString() + "€";
+            balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
         }
     }
 }

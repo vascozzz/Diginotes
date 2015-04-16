@@ -14,10 +14,12 @@ namespace Client
         // container for client data
         public ClientData data;
 
+
         // private pointers
         private IRemObj remObj;
         private Intermediate inter;
         private AppForm appForm;
+
 
         [STAThread]
         static void Main()
@@ -28,6 +30,7 @@ namespace Client
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new LoginForm(client));
         }
+
 
         /* When starting, a client should automatically connect to the server. */
         public Client()
@@ -40,43 +43,47 @@ namespace Client
             remObj.NewExchange += inter.TriggerNewExchange;
         }
 
+
         /* Sets a pointer to the form where all info is displayed so that it can be updated on events' callbacks. */
         public void SetAppForm(AppForm appForm)
         {
             this.appForm = appForm;
         }
 
+
+        public void UpdateEconomy(ClientData clientData)
+        {
+            data.balance = clientData.balance;
+            data.balanceAvlb = clientData.balanceAvlb;
+
+            data.diginotes = clientData.diginotes;
+            data.diginotesAvlb = clientData.diginotesAvlb;
+        }
+
+
         /* Login, server returns null when user is not found. */
         public bool Login(string nickname, string password)
         {
-            ClientData? loginData = remObj.Login(nickname, password);
+            data = remObj.Login(nickname, password);
 
-            if (!loginData.HasValue)
-            {
-                return false;
-            }
-            else
-            {
-                data = loginData.Value;
-                return true;
-            }          
+            return (data != null);        
         }
+
 
         /* Requests the server to register a new exchange (either buying or selling diginotes). */
         public void RequestExchange(ExchangeType exchangeType, int diginotes)
         {
             // Request
-            ExchangeData exchangeData = remObj.RequestExchange(data.user_id, exchangeType, diginotes);
+            UpdateData update = remObj.RequestExchange(data.user_id, exchangeType, diginotes);
 
-            Debug.WriteLine("DEVIA TAR A 20: " + exchangeData.diginotes_fulfilled);
-
-            // Add Data to Client
-            data.exchanges.Add(exchangeData);
+            data.exchanges.Add(update.exchange);
+            UpdateEconomy(update.clientData);
 
             // should create a new exchange and update form
-            if (appForm != null)
-                appForm.AddToHistory(exchangeData);
+            appForm.AddToHistory(update.exchange);
+            appForm.UpdateEconomy();
         }
+
 
         /* When disconnecting, clients should unsubscribe from server events. */
         public void Disconnect()
@@ -86,39 +93,28 @@ namespace Client
             inter.NewExchange -= OnNewExchange;
         }
 
+
         /* Callback triggered when the server pairs up two exchanges. */
-        public void OnNewExchange(ExchangeData exchange)
+        public void OnNewExchange(UpdateData update)
         {
             Debug.WriteLine("Some client requested a new exchange.");
 
-            // should update user's exchanges if needed 
-            if (appForm != null && exchange.user_id == data.user_id) // disables events on login screen
-            {
-                ExchangeData myExchange = new ExchangeData();
-                int myIndex = 0;
+            int myIndex = -1;
 
+            // should update user's exchanges if needed 
+            if (appForm != null && update.clientData.user_id == data.user_id) // disables events on login screen
+            {
                 for (int i = 0; i < data.exchanges.Count; i++)
-                    if (data.exchanges[i].exchange_id == exchange.exchange_id)
+                    if (data.exchanges[i].exchange_id == update.exchange.exchange_id)
                     {
-                        myExchange = data.exchanges[i];
+                        data.exchanges[i].diginotes_fulfilled = update.exchange.diginotes_fulfilled;
                         myIndex = i;
                         break;
                     }
 
-
-                //int signal = exchange.type == ExchangeType.BUY ? 1 : -1; //Buy decreses balance and increses diginotes, Sell does the opposite.
-
-                //data.balance -= signal*(exchange.diginotes_fulfilled - myExchange.diginotes_fulfilled) * data.quotation;
-                //data.diginotes += signal*(exchange.diginotes_fulfilled - myExchange.diginotes_fulfilled);
-
-                
-                myExchange.diginotes_fulfilled = exchange.diginotes_fulfilled;
+                UpdateEconomy(update.clientData);
                 appForm.OnNewExchange(myIndex);
-
-                foreach (ExchangeData ex in data.exchanges)
-                    Debug.WriteLine(ex.diginotes_fulfilled);
             }
-        }
-        
+        }  
     }
 }
