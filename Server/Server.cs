@@ -92,6 +92,11 @@ public class RemObj : MarshalByRefObject, IRemObj
         }         
     }
 
+    private void GetClientInfo(ClientData data)
+    {
+
+    }
+
 
     /* On register, should return all client info so user can be logged-in automatically. */
     public bool Register(String name, String nickname, String password)
@@ -137,10 +142,9 @@ public class RemObj : MarshalByRefObject, IRemObj
         exchange_id = Convert.ToInt32((long) data["exchange_id"]);
 
         // trigger event and return exchange data
-        NewExchange();
         ExchangeData newExchange = new ExchangeData(exchange_id, user_id, exchangeType, diginotes, diginotes_fulfilled, created);
 
-        FindMatch(newExchange);
+        FindMatch(ref newExchange);
         return newExchange;
 
         // TODO: refactor so that: find match, create and modify exchange, activate event (creator doesn't have exchange yet), return resulting exchange
@@ -148,45 +152,45 @@ public class RemObj : MarshalByRefObject, IRemObj
 
 
     /* Attempts to find a match between two exchanges. */
-    private void FindMatch(ExchangeData exchange)
+    private void FindMatch(ref ExchangeData exchange)
     {
         int diginotesNeeded = exchange.diginotes - exchange.diginotes_fulfilled;
-        int diginotesAvailable = 0;
 
         ExchangeType matchingType = exchange.type == ExchangeType.BUY ? ExchangeType.SELL : ExchangeType.BUY;
-        ExchangeData matchingExchange = new ExchangeData(-1, -1, matchingType, 0, 0, "");
-
-        Console.WriteLine("Attempting to find a match for " + diginotesNeeded + " diginotes. Type is " + exchange.type + ".");
-        Console.WriteLine("Matching type is " + matchingType + ".");
 
         // should later update so that owner =/= exchange.owner
-        string sql = "SELECT * FROM exchange where type = @matchingType AND diginotes - diginotes_fulfilled > 0 ORDER BY created ASC";
+        string sql = "SELECT * FROM exchange WHERE user_id != @userId AND type = @matchingType AND diginotes - diginotes_fulfilled > 0 ORDER BY created ASC";
         SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@userId", exchange.user_id.ToString());
         command.Parameters.AddWithValue("@matchingType", matchingType.ToString());
         SQLiteDataReader data = command.ExecuteReader();
 
-        while (data.Read())
+        while (data.Read() && diginotesNeeded > 0)
         {
             int exchange_id = Convert.ToInt32((long) data["exchange_id"]);
             int user_id = Convert.ToInt32((long) data["user_id"]);
             int exchange_diginotes = Convert.ToInt32((long) data["diginotes"]);
             int diginotes_fulfilled = Convert.ToInt32((long) data["diginotes_fulfilled"]);
+            string created = (string)data["created"];
             int diginotes_fortrade = exchange_diginotes - diginotes_fulfilled;
-            string created = (string) data["created"];
 
-            if (diginotes_fortrade > diginotesAvailable)
-            {
-                matchingExchange = new ExchangeData(exchange_id, user_id, matchingType, exchange_diginotes, diginotes_fulfilled, created);
-                diginotesAvailable = diginotes_fortrade;
-            }
+            int diginotesTraded = Math.Min(diginotesNeeded, diginotes_fortrade);
+            diginotesNeeded -= diginotesTraded;
 
-            if (diginotes_fortrade >= diginotesNeeded)
-            {
-                break;
-            }
+            ExchangeData matchingExchange = new ExchangeData(exchange_id, user_id, matchingType, exchange_diginotes, diginotes_fulfilled, created);
+
+            if (exchange.type == ExchangeType.BUY)
+                MakeTransfer(exchange, matchingExchange, diginotesTraded);
+            else
+                MakeTransfer(matchingExchange, exchange, diginotesTraded);
+
+            matchingExchange.diginotes_fulfilled += diginotesTraded;
+            exchange.diginotes_fulfilled += diginotesTraded;
+
+            NewExchange(matchingExchange);
+
+            Console.Write("Found Match: id=" + exchange_id + " fortrade=" + diginotes_fortrade + " traded=" + diginotesTraded);
         }
-
-        Console.WriteLine("Found matching exchange! ID: " + matchingExchange.exchange_id + " for " + diginotesAvailable + " diginotes.");
     }
 
 
@@ -231,6 +235,16 @@ public class RemObj : MarshalByRefObject, IRemObj
                 command.CommandText = "UPDATE user SET balance = balance + @value WHERE user_id = @sellerId";
                 command.Parameters.AddWithValue("@sellerId", sellExchange.user_id);
                 command.Parameters.AddWithValue("@value", transferValue);
+                command.ExecuteNonQuery();
+
+                // add transaction to history
+                command.Parameters.Clear();
+                command.CommandText = "INSERT INTO history VALUES(null, @buyId, @sellId, @diginotes, @quotation, @created)";
+                command.Parameters.AddWithValue("@buyId", buyExchange.user_id);
+                command.Parameters.AddWithValue("@sellId", sellExchange.user_id);
+                command.Parameters.AddWithValue("@diginotes", diginotes);
+                command.Parameters.AddWithValue("@quotation", quotation);
+                command.Parameters.AddWithValue("@created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.ExecuteNonQuery();
 
                 transaction.Commit();

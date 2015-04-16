@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public delegate void ExchangeHandler();
+public delegate void ExchangeHandler(ExchangeData exchange);
 public delegate void QuotationHandler();
 
 public interface IRemObj
@@ -22,9 +22,9 @@ public class Intermediate : MarshalByRefObject
     public event ExchangeHandler NewExchange;
     public event QuotationHandler NewQuotation;
 
-    public void TriggerNewExchange()
+    public void TriggerNewExchange(ExchangeData exchange)
     {
-        NewExchange();
+        NewExchange(exchange);
     }
 }
 
@@ -56,7 +56,7 @@ public struct ClientData
 }
 
 [Serializable]
-public struct ExchangeData
+public class ExchangeData
 {
     public int exchange_id;
     public int user_id;
@@ -64,6 +64,11 @@ public struct ExchangeData
     public int diginotes;
     public int diginotes_fulfilled;
     public string created;
+
+    public ExchangeData()
+    {
+
+    }
 
     public ExchangeData(int exchange_id, int user_id, ExchangeType type, int diginotes, int diginotes_fulfilled, string created)
     {

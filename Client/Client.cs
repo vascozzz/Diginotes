@@ -65,13 +65,17 @@ namespace Client
         /* Requests the server to register a new exchange (either buying or selling diginotes). */
         public void RequestExchange(ExchangeType exchangeType, int diginotes)
         {
+            // Request
             ExchangeData exchangeData = remObj.RequestExchange(data.user_id, exchangeType, diginotes);
 
-            // should create a new exchange and update form
-            if (appForm != null) 
-            {
+            Debug.WriteLine("DEVIA TAR A 20: " + exchangeData.diginotes_fulfilled);
 
-            }
+            // Add Data to Client
+            data.exchanges.Add(exchangeData);
+
+            // should create a new exchange and update form
+            if (appForm != null)
+                appForm.AddToHistory(exchangeData);
         }
 
         /* When disconnecting, clients should unsubscribe from server events. */
@@ -83,14 +87,36 @@ namespace Client
         }
 
         /* Callback triggered when the server pairs up two exchanges. */
-        public void OnNewExchange()
+        public void OnNewExchange(ExchangeData exchange)
         {
             Debug.WriteLine("Some client requested a new exchange.");
 
             // should update user's exchanges if needed 
-            if (appForm != null) // disables events on login screen
+            if (appForm != null && exchange.user_id == data.user_id) // disables events on login screen
             {
-                appForm.OnNewExchange();
+                ExchangeData myExchange = new ExchangeData();
+                int myIndex = 0;
+
+                for (int i = 0; i < data.exchanges.Count; i++)
+                    if (data.exchanges[i].exchange_id == exchange.exchange_id)
+                    {
+                        myExchange = data.exchanges[i];
+                        myIndex = i;
+                        break;
+                    }
+
+
+                //int signal = exchange.type == ExchangeType.BUY ? 1 : -1; //Buy decreses balance and increses diginotes, Sell does the opposite.
+
+                //data.balance -= signal*(exchange.diginotes_fulfilled - myExchange.diginotes_fulfilled) * data.quotation;
+                //data.diginotes += signal*(exchange.diginotes_fulfilled - myExchange.diginotes_fulfilled);
+
+                
+                myExchange.diginotes_fulfilled = exchange.diginotes_fulfilled;
+                appForm.OnNewExchange(myIndex);
+
+                foreach (ExchangeData ex in data.exchanges)
+                    Debug.WriteLine(ex.diginotes_fulfilled);
             }
         }
         

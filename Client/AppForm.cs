@@ -41,12 +41,13 @@ namespace Client
             balanceText.Text = client.data.balance.ToString() + "€";
             balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
 
-            historyGrid.ColumnCount = 5;
+            historyGrid.ColumnCount = 6;
             historyGrid.Columns[0].Name = "id";
             historyGrid.Columns[1].Name = "type";
             historyGrid.Columns[2].Name = "diginotes";
             historyGrid.Columns[3].Name = "fulfilled";
-            historyGrid.Columns[4].Name = "created";
+            historyGrid.Columns[4].Name = "fulfilled_status";
+            historyGrid.Columns[5].Name = "created";
             historyCount = 0;
 
             InitHistory();
@@ -89,8 +90,9 @@ namespace Client
                 historyGrid.Rows[historyCount].Cells[0].Value = exchange.exchange_id;
                 historyGrid.Rows[historyCount].Cells[1].Value = exchange.type.ToString();
                 historyGrid.Rows[historyCount].Cells[2].Value = exchange.diginotes;
-                historyGrid.Rows[historyCount].Cells[3].Value = fulfilled ? "yes" : "no";
-                historyGrid.Rows[historyCount].Cells[4].Value = exchange.created;
+                historyGrid.Rows[historyCount].Cells[3].Value = exchange.diginotes_fulfilled;
+                historyGrid.Rows[historyCount].Cells[4].Value = fulfilled ? "yes" : "no";
+                historyGrid.Rows[historyCount].Cells[5].Value = exchange.created;
                 historyCount++;
             }
 
@@ -98,14 +100,21 @@ namespace Client
             diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
         }
 
-        private void AddToHistory(ExchangeType exchangeType, int diginotes)
+        public void AddToHistory(ExchangeData exchange)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { AddToHistory(exchange); });
+                return;
+            }
+
             historyGrid.Rows.Add();
-            historyGrid.Rows[historyCount].Cells[0].Value = historyCount;
-            historyGrid.Rows[historyCount].Cells[1].Value = exchangeType;
-            historyGrid.Rows[historyCount].Cells[2].Value = diginotes;
-            historyGrid.Rows[historyCount].Cells[3].Value = "no";
-            historyGrid.Rows[historyCount].Cells[4].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            historyGrid.Rows[historyCount].Cells[0].Value = exchange.exchange_id;
+            historyGrid.Rows[historyCount].Cells[1].Value = exchange.type.ToString();
+            historyGrid.Rows[historyCount].Cells[2].Value = exchange.diginotes;
+            historyGrid.Rows[historyCount].Cells[3].Value = exchange.diginotes_fulfilled;
+            historyGrid.Rows[historyCount].Cells[4].Value = exchange.diginotes == exchange.diginotes_fulfilled ? "yes" : "no";
+            historyGrid.Rows[historyCount].Cells[5].Value = exchange.created;
             historyCount++;
         }
 
@@ -143,7 +152,6 @@ namespace Client
             client.data.balanceAvlb -= balanceNeeded;
             balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
 
-            AddToHistory(ExchangeType.BUY, buyAmount);
             client.RequestExchange(ExchangeType.BUY, buyAmount);
         }
 
@@ -174,7 +182,6 @@ namespace Client
             client.data.diginotesAvlb -= sellAmount;
             diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
 
-            AddToHistory(ExchangeType.SELL, sellAmount);
             client.RequestExchange(ExchangeType.SELL, sellAmount);
         }
 
@@ -206,21 +213,25 @@ namespace Client
             }
         }
 
-        public void OnNewExchange()
+        public void OnNewExchange(int index)
         {
-            if (InvokeRequired)
-                BeginInvoke((MethodInvoker)delegate { OnNewExchange(); });
-            else
+            if(InvokeRequired)
             {
-                MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+                BeginInvoke((MethodInvoker)delegate { OnNewExchange(index); });
+                return;
             }
 
+            diginotesText.Text = client.data.diginotes.ToString();
+            balanceText.Text = client.data.balance.ToString();
+
+            ExchangeData data = client.data.exchanges[index];
+
+            historyGrid.Rows[index].Cells[3].Value = data.diginotes_fulfilled;
+            historyGrid.Rows[index].Cells[4].Value = data.diginotes == data.diginotes_fulfilled ? "yes" : "no";
+            
             // nameText.Text = "Some client initiated a new exchange";
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
-
-            // run through client history, if ids match, update history row at index
-            // should also remember to check if user ids match before trying to do anything
         }
     }
 }
