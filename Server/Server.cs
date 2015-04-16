@@ -142,6 +142,8 @@ public class RemObj : MarshalByRefObject, IRemObj
 
         FindMatch(newExchange);
         return newExchange;
+
+        // TODO: refactor so that: find match, create and modify exchange, activate event (creator doesn't have exchange yet), return resulting exchange
     }
 
 

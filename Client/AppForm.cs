@@ -208,7 +208,14 @@ namespace Client
 
         public void OnNewExchange()
         {
-            nameText.Text = "Some client initiated a new exchange";
+            if (InvokeRequired)
+                BeginInvoke((MethodInvoker)delegate { OnNewExchange(); });
+            else
+            {
+                MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+            }
+
+            // nameText.Text = "Some client initiated a new exchange";
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
 

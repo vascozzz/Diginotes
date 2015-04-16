@@ -29,7 +29,7 @@ namespace Client
             Application.Run(new LoginForm(client));
         }
 
-        /* When starting, a client should automatically onnect to the server. */
+        /* When starting, a client should automatically connect to the server. */
         public Client()
         {
             RemotingConfiguration.Configure("Client.exe.config", false);
@@ -90,7 +90,7 @@ namespace Client
             // should update user's exchanges if needed 
             if (appForm != null) // disables events on login screen
             {
-                // appForm.OnNewExchange();
+                appForm.OnNewExchange();
             }
         }
         
