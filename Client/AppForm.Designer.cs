@@ -101,6 +101,8 @@
             this.historyGrid.Style = MetroFramework.MetroColorStyle.Green;
             this.historyGrid.TabIndex = 0;
             this.historyGrid.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.historyGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.historyGrid_CellValueChanged);
+       
             // 
             // buyBtn
             // 

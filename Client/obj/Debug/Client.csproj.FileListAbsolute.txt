@@ -25,3 +25,5 @@ C:\Programming\C#\Diginotes\Client\obj\Debug\Client.exe
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.pdb
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.LoginForm.resources
 C:\Programming\C#\Diginotes\Client\obj\Debug\Client.AppForm.resources
+C:\Programming\C#\Diginotes\Client\obj\Debug\Client.QuotationCreator.resources
+C:\Programming\C#\Diginotes\Client\obj\Debug\Client.QuotationHandler.resources

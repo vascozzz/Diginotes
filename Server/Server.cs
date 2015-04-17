@@ -35,6 +35,15 @@ public class RemObj : MarshalByRefObject, IRemObj
     }
 
 
+    /* On register, should return all client info so user can be logged-in automatically. */
+    public bool Register(String name, String nickname, String password)
+    {
+        Console.WriteLine("\nA client called Register().");
+
+        return db.Register(name, nickname, password);
+    }
+
+
     /* On login, should return all client info (including number of diginotes owned and previous exchanges). */
     public ClientData Login(string nickname, string password)
     {
@@ -66,12 +75,13 @@ public class RemObj : MarshalByRefObject, IRemObj
     }
 
 
-    /* On register, should return all client info so user can be logged-in automatically. */
-    public bool Register(String name, String nickname, String password)
+    /* Updates quotation set by a given user. */
+    public void SetQuotation(float quotation)
     {
-        Console.WriteLine("\nA client called Register().");
+        Console.WriteLine("\nA new quotation has been set. Current value: " + quotation);
 
-        return db.Register(name, nickname, password); 
+        this.quotation = quotation;
+        NewQuotation(quotation);
     }
 
 

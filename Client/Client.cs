@@ -38,9 +38,11 @@ namespace Client
             RemotingConfiguration.Configure("Client.exe.config", false);
             inter = new Intermediate();
             inter.NewExchange += OnNewExchange;
+            inter.NewQuotation += OnNewQuotation;
 
             remObj = (IRemObj)GetRemote.New(typeof(IRemObj));
             remObj.NewExchange += inter.TriggerNewExchange;
+            remObj.NewQuotation += inter.TriggerNewQuotation;
         }
 
 
@@ -95,6 +97,20 @@ namespace Client
             // should create a new exchange and update form
             appForm.AddToHistory(update.exchange);
             appForm.UpdateEconomy();
+
+            // if needed, ask user for a new quotation
+            if (update.exchange.diginotes != update.exchange.diginotes_fulfilled)
+            {
+                QuotationCreator quotationCreator = new QuotationCreator(this, data.quotation, exchangeType);
+                quotationCreator.Show();
+            }
+        }
+
+
+        /* Sends a new quotation to the server. */
+        public void SetQuotation(float quotation)
+        {
+            remObj.SetQuotation(quotation);
         }
 
 
@@ -102,22 +118,35 @@ namespace Client
         public void OnNewExchange(UpdateData update)
         {
             Debug.WriteLine("Some client requested a new exchange.");
+
+            if (appForm == null || update.clientData.user_id != data.user_id) 
+            {
+                return;
+            }
+
             int exchangeIndex = -1;
 
-            if (appForm != null && update.clientData.user_id == data.user_id) // disables events on login screen
-            {
-                for (int i = 0; i < data.exchanges.Count; i++) { 
-                    if (data.exchanges[i].exchange_id == update.exchange.exchange_id)
-                    {
-                        data.exchanges[i].diginotes_fulfilled = update.exchange.diginotes_fulfilled;
-                        exchangeIndex = i;
-                        break;
-                    }
+            // find exchange, update it with the data received
+            for (int i = 0; i < data.exchanges.Count; i++) { 
+                if (data.exchanges[i].exchange_id == update.exchange.exchange_id)
+                {
+                    data.exchanges[i].diginotes_fulfilled = update.exchange.diginotes_fulfilled;
+                    exchangeIndex = i;
+                    break;
                 }
-
-                UpdateEconomy(update.clientData);
-                appForm.OnNewExchange(exchangeIndex);
             }
+
+            // update client data and its display
+            UpdateEconomy(update.clientData);
+            appForm.OnNewExchange(exchangeIndex);
         }  
+
+        
+        /* Callback triggered when a new quotation has been set on the server. */
+        public void OnNewQuotation(float quotation)
+        {
+            data.quotation = quotation;
+            appForm.UpdateQuotation();
+        }
     }
 }

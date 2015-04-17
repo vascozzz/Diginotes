@@ -17,6 +17,7 @@ namespace Client
         private MetroForm parent;
         private Client client;
         private int historyCount;
+        private bool canEdit;
 
 
         public AppForm()
@@ -37,7 +38,10 @@ namespace Client
             quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
 
+            // create columns for history grid
+            historyGrid.ReadOnly = false;
             historyCount = 0;
+
             historyGrid.ColumnCount = 6;
             historyGrid.Columns[0].Name = "id";
             historyGrid.Columns[1].Name = "type";
@@ -46,6 +50,7 @@ namespace Client
             historyGrid.Columns[4].Name = "done";
             historyGrid.Columns[5].Name = "created"; 
 
+            // set individual column sizes
             historyGrid.Columns[0].Width = 30;
             historyGrid.Columns[1].Width = 45;
             historyGrid.Columns[2].Width = 55;
@@ -53,12 +58,18 @@ namespace Client
             historyGrid.Columns[4].Width = 55;
             historyGrid.Columns[5].Width = 120;
 
+            // center colum headers
             historyGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+            // center all columns, make them not editable
             for (int i = 0; i < historyGrid.ColumnCount; i++)
             {
                 historyGrid.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                historyGrid.Columns[i].ReadOnly = true;
             }
+
+            // diginotes column should be the only one 
+            historyGrid.Columns[2].ReadOnly = false;
 
             UpdateEconomy();
             InitHistory();
@@ -91,6 +102,12 @@ namespace Client
         }
 
 
+        private void SetFulfilledHistory(int historyId, bool fulfilled)
+        {
+            historyGrid.Rows[historyId].Cells[2].Value = fulfilled ? "yes" : "no";
+        }
+
+
         public void AddToHistory(ExchangeData exchange)
         {
             if (InvokeRequired)
@@ -99,6 +116,7 @@ namespace Client
                 return;
             }
 
+            canEdit = false;
             historyGrid.Rows.Add();
             historyGrid.Rows[historyCount].Cells[0].Value = exchange.exchange_id;
             historyGrid.Rows[historyCount].Cells[1].Value = exchange.type.ToString();
@@ -107,12 +125,7 @@ namespace Client
             historyGrid.Rows[historyCount].Cells[4].Value = exchange.diginotes == exchange.diginotes_fulfilled ? "yes" : "no";
             historyGrid.Rows[historyCount].Cells[5].Value = exchange.created;
             historyCount++;
-        }
-
-
-        private void SetFulfilledHistory(int historyId, bool fulfilled)
-        {
-            historyGrid.Rows[historyId].Cells[2].Value = fulfilled ? "yes" : "no";
+            canEdit = true;
         }
 
 
@@ -222,12 +235,14 @@ namespace Client
 
             ExchangeData data = client.data.exchanges[index];
 
+            canEdit = false;
             historyGrid.Rows[index].Cells[3].Value = data.diginotes_fulfilled;
             historyGrid.Rows[index].Cells[4].Value = data.diginotes == data.diginotes_fulfilled ? "yes" : "no";
+            canEdit = true;
 
             UpdateEconomy();
             
-            // nameText.Text = "Some client initiated a new exchange";
+            //nameText.Text = "Some client initiated a new exchange";
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
         }
@@ -241,12 +256,38 @@ namespace Client
                 return;
             }
 
-
             diginotesText.Text = client.data.diginotes.ToString();
             diginotesAvailableText.Text = client.data.diginotesAvlb.ToString();
 
             balanceText.Text = client.data.balance.ToString() + "€";
             balanceAvailableText.Text = client.data.balanceAvlb.ToString() + "€";
+        }
+
+
+        public void UpdateQuotation()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { UpdateQuotation(); });
+                return;
+            }
+
+            quotationText.Text = client.data.quotation.ToString() + "€ each";
+            quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
+        }
+
+
+        private void historyGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            // the event is also called on programmatic changes, so we need a boolean to disable the event on such cases
+            if (!canEdit)
+            {
+                return;
+            }
+
+            int id = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["id"].Value);
+            int updatedTo = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value);
+            nameText.Text = "Updated exchange " + id + " to " + updatedTo + " diginotes.";
         }
     }
 }

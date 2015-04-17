@@ -12,10 +12,11 @@ public interface IRemObj
     event ExchangeHandler NewExchange;
     event QuotationHandler NewQuotation;
 
-    ClientData Login(string nickname, string password);
     bool Register(String name, String nickname, String password);
-    UpdateData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes);
+    ClientData Login(string nickname, string password);
     void Logout(string nickname);
+    UpdateData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes);
+    void SetQuotation(float quotation);
 }
 
 public class Intermediate : MarshalByRefObject
@@ -26,6 +27,11 @@ public class Intermediate : MarshalByRefObject
     public void TriggerNewExchange(UpdateData update)
     {
         NewExchange(update);
+    }
+
+    public void TriggerNewQuotation(float quotation)
+    {
+        NewQuotation(quotation);
     }
 }
 
