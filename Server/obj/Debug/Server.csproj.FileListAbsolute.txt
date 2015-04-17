@@ -8,3 +8,6 @@ C:\Programming\C#\Diginotes\Server\obj\Debug\Server.pdb
 C:\Programming\C#\Diginotes\Server\bin\Debug\Server.exe.config
 C:\Programming\C#\Diginotes\Server\bin\Debug\System.Data.SQLite.dll
 C:\Programming\C#\Diginotes\Server\bin\Debug\System.Data.SQLite.xml
+C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.Design.dll
+C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.dll
+C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.Fonts.dll

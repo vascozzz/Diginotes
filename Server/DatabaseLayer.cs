@@ -9,11 +9,13 @@ class DatabaseLayer
 {
     private SQLiteConnection db;
 
+
     public DatabaseLayer()
     {
         db = new SQLiteConnection("Data Source=diginote.sqlite;Version=3;");
         db.Open();
     }
+
 
     public ClientData GetLogin(string nickname, string password)
     {
@@ -38,6 +40,7 @@ class DatabaseLayer
         }     
     }
 
+
     public ClientData GetClientData(int user_id)
     {
         string sql = "SELECT name, balance FROM USER WHERE user_id = @user_id";
@@ -53,6 +56,7 @@ class DatabaseLayer
         return clientData;
     }
 
+
     public bool Register(string name, string nickname, string password)
     {
         string sql = "INSERT INTO USER(name, nickname, password) VALUES(@name, @nickname, @password)";
@@ -66,6 +70,7 @@ class DatabaseLayer
         return true;
     }
 
+
     public int GetDiginotes(int user_id)
     {
         string sql = "SELECT COUNT(*) AS diginotes FROM diginote WHERE owner_id = @owner_id";
@@ -76,6 +81,7 @@ class DatabaseLayer
 
         return Convert.ToInt32((long) data["diginotes"]);
     }
+
 
     public List<ExchangeData> GetExchanges(int user_id)
     {
@@ -102,6 +108,7 @@ class DatabaseLayer
 
         return exchanges;
     }
+
 
     public ExchangeData RegisterExchange(int user_id, ExchangeType exchangeType, int diginotes)
     {
@@ -130,6 +137,7 @@ class DatabaseLayer
         return new ExchangeData(exchange_id, user_id, exchangeType, diginotes, diginotes_fulfilled, created);
     }
 
+
     public List<ExchangeData> GetMatches(ExchangeData exchange)
     {
         int user_id = exchange.user_id;
@@ -157,6 +165,7 @@ class DatabaseLayer
 
         return matches;
     }
+
 
     /* Used by the server when detecting exchange matches to make the transfer of digicoins/balances between clients. */
     public void RegisterTransfer(ExchangeData buyExchange, ExchangeData sellExchange, int diginotes, float quotation)

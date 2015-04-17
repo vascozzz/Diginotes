@@ -18,10 +18,12 @@ namespace Client
         private Client client;
         private int historyCount;
 
+
         public AppForm()
         {
             InitializeComponent();
         }
+
 
         public AppForm(MetroForm parent, Client client)
         {
@@ -35,18 +37,33 @@ namespace Client
             quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
 
+            historyCount = 0;
             historyGrid.ColumnCount = 6;
             historyGrid.Columns[0].Name = "id";
             historyGrid.Columns[1].Name = "type";
             historyGrid.Columns[2].Name = "diginotes";
             historyGrid.Columns[3].Name = "fulfilled";
-            historyGrid.Columns[4].Name = "fulfilled_status";
-            historyGrid.Columns[5].Name = "created";
-            historyCount = 0;
+            historyGrid.Columns[4].Name = "done";
+            historyGrid.Columns[5].Name = "created"; 
+
+            historyGrid.Columns[0].Width = 30;
+            historyGrid.Columns[1].Width = 45;
+            historyGrid.Columns[2].Width = 55;
+            historyGrid.Columns[3].Width = 55;
+            historyGrid.Columns[4].Width = 55;
+            historyGrid.Columns[5].Width = 120;
+
+            historyGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            for (int i = 0; i < historyGrid.ColumnCount; i++)
+            {
+                historyGrid.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
 
             UpdateEconomy();
             InitHistory();
         }
+
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -57,11 +74,13 @@ namespace Client
             parent.Close();
         }
 
+
         private void ResetErrors()
         {
             buyError.Visible = false;
             sellError.Visible = false;
         }
+
 
         private void InitHistory()
         {
@@ -70,6 +89,7 @@ namespace Client
                 AddToHistory(exchange);
             }
         }
+
 
         public void AddToHistory(ExchangeData exchange)
         {
@@ -89,10 +109,12 @@ namespace Client
             historyCount++;
         }
 
+
         private void SetFulfilledHistory(int historyId, bool fulfilled)
         {
             historyGrid.Rows[historyId].Cells[2].Value = fulfilled ? "yes" : "no";
         }
+
 
         private void RequestBuyExchange()
         {
@@ -126,6 +148,7 @@ namespace Client
             client.RequestExchange(ExchangeType.BUY, buyAmount);
         }
 
+
         private void RequestSellExchange()
         {
             int sellAmount = 0;
@@ -156,15 +179,18 @@ namespace Client
             client.RequestExchange(ExchangeType.SELL, sellAmount);
         }
 
+
         private void buyBtn_Click(object sender, EventArgs e)
         {
             RequestBuyExchange();
         }
 
+
         private void sellBtn_Click(object sender, EventArgs e)
         {
             RequestSellExchange();
         }
+
 
         private void buyText_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
@@ -175,6 +201,7 @@ namespace Client
             }
         }
 
+
         private void sellText_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == (char) Keys.Return)
@@ -183,6 +210,7 @@ namespace Client
                 e.Handled = true;
             }
         }
+
 
         public void OnNewExchange(int index)
         {
@@ -203,6 +231,7 @@ namespace Client
             //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
             //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
         }
+
 
         public void UpdateEconomy()
         {

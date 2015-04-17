@@ -14,16 +14,19 @@ namespace Client
     {
         private Client client;
 
+
         public LoginForm()
         {
             InitializeComponent();
         }
+
 
         public LoginForm(Client client)
         {
             InitializeComponent();
             this.client = client;
         }
+
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -33,6 +36,7 @@ namespace Client
 
             client.Disconnect();
         }
+
 
         private void metroButton1_Click(object sender, EventArgs e)
         {

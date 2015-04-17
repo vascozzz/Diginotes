@@ -44,6 +44,27 @@ namespace Client
         }
 
 
+        /* Login, server returns null when user is not found. */
+        public bool Login(string nickname, string password)
+        {
+            data = remObj.Login(nickname, password);
+            return (data != null);
+        }
+
+
+        /* When disconnecting, clients should unsubscribe from server events. */
+        public void Disconnect()
+        {
+            if (data != null)
+            {
+                remObj.Logout(data.name);
+            }
+
+            remObj.NewExchange -= inter.TriggerNewExchange;
+            inter.NewExchange -= OnNewExchange;
+        }
+
+
         /* Sets a pointer to the form where all info is displayed so that it can be updated on events' callbacks. */
         public void SetAppForm(AppForm appForm)
         {
@@ -51,6 +72,7 @@ namespace Client
         }
 
 
+        /* Updates everything related to a client's balance and diginotes. */
         public void UpdateEconomy(ClientData clientData)
         {
             data.balance = clientData.balance;
@@ -58,15 +80,6 @@ namespace Client
 
             data.diginotes = clientData.diginotes;
             data.diginotesAvlb = clientData.diginotesAvlb;
-        }
-
-
-        /* Login, server returns null when user is not found. */
-        public bool Login(string nickname, string password)
-        {
-            data = remObj.Login(nickname, password);
-
-            return (data != null);        
         }
 
 
@@ -85,35 +98,25 @@ namespace Client
         }
 
 
-        /* When disconnecting, clients should unsubscribe from server events. */
-        public void Disconnect()
-        {
-            Debug.WriteLine("Client disconnected successfully.");
-            remObj.NewExchange -= inter.TriggerNewExchange;
-            inter.NewExchange -= OnNewExchange;
-        }
-
-
         /* Callback triggered when the server pairs up two exchanges. */
         public void OnNewExchange(UpdateData update)
         {
             Debug.WriteLine("Some client requested a new exchange.");
+            int exchangeIndex = -1;
 
-            int myIndex = -1;
-
-            // should update user's exchanges if needed 
             if (appForm != null && update.clientData.user_id == data.user_id) // disables events on login screen
             {
-                for (int i = 0; i < data.exchanges.Count; i++)
+                for (int i = 0; i < data.exchanges.Count; i++) { 
                     if (data.exchanges[i].exchange_id == update.exchange.exchange_id)
                     {
                         data.exchanges[i].diginotes_fulfilled = update.exchange.diginotes_fulfilled;
-                        myIndex = i;
+                        exchangeIndex = i;
                         break;
                     }
+                }
 
                 UpdateEconomy(update.clientData);
-                appForm.OnNewExchange(myIndex);
+                appForm.OnNewExchange(exchangeIndex);
             }
         }  
     }

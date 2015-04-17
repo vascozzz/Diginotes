@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 public delegate void ExchangeHandler(UpdateData update);
-public delegate void QuotationHandler();
+public delegate void QuotationHandler(float quotation);
 
 public interface IRemObj
 {
@@ -15,6 +15,7 @@ public interface IRemObj
     ClientData Login(string nickname, string password);
     bool Register(String name, String nickname, String password);
     UpdateData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes);
+    void Logout(string nickname);
 }
 
 public class Intermediate : MarshalByRefObject
@@ -96,7 +97,12 @@ public class ExchangeData
 
     public ExchangeData()
     {
-
+        this.exchange_id = -1;
+        this.user_id = -1;
+        this.type = ExchangeType.BUY;
+        this.diginotes = -1;
+        this.diginotes_fulfilled = -1;
+        this.created = "";
     }
 
     public ExchangeData(int exchange_id, int user_id, ExchangeType type, int diginotes, int diginotes_fulfilled, string created)
