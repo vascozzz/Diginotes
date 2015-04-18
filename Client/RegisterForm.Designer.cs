@@ -1,6 +1,6 @@
 ﻿namespace Client
 {
-    partial class LoginForm
+    partial class RegisterForm
     {
         /// <summary>
         /// Required designer variable.
@@ -32,16 +32,15 @@
             this.usernameText = new MetroFramework.Controls.MetroTextBox();
             this.passwordLabel = new MetroFramework.Controls.MetroLabel();
             this.passwordText = new MetroFramework.Controls.MetroTextBox();
-            this.loginBtn = new MetroFramework.Controls.MetroButton();
-            this.passwordError = new MetroFramework.Controls.MetroLabel();
             this.registerBtn = new MetroFramework.Controls.MetroButton();
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.nameText = new MetroFramework.Controls.MetroTextBox();
+            this.nameLabel = new MetroFramework.Controls.MetroLabel();
             this.SuspendLayout();
             // 
             // usernameLabel
             // 
             this.usernameLabel.AutoSize = true;
-            this.usernameLabel.Location = new System.Drawing.Point(35, 86);
+            this.usernameLabel.Location = new System.Drawing.Point(35, 117);
             this.usernameLabel.Name = "usernameLabel";
             this.usernameLabel.Size = new System.Drawing.Size(71, 19);
             this.usernameLabel.TabIndex = 0;
@@ -51,7 +50,7 @@
             // usernameText
             // 
             this.usernameText.Lines = new string[0];
-            this.usernameText.Location = new System.Drawing.Point(125, 86);
+            this.usernameText.Location = new System.Drawing.Point(125, 117);
             this.usernameText.MaxLength = 32767;
             this.usernameText.Name = "usernameText";
             this.usernameText.PasswordChar = '\0';
@@ -65,7 +64,7 @@
             // passwordLabel
             // 
             this.passwordLabel.AutoSize = true;
-            this.passwordLabel.Location = new System.Drawing.Point(39, 128);
+            this.passwordLabel.Location = new System.Drawing.Point(39, 159);
             this.passwordLabel.Name = "passwordLabel";
             this.passwordLabel.Size = new System.Drawing.Size(66, 19);
             this.passwordLabel.TabIndex = 2;
@@ -75,7 +74,7 @@
             // passwordText
             // 
             this.passwordText.Lines = new string[0];
-            this.passwordText.Location = new System.Drawing.Point(125, 128);
+            this.passwordText.Location = new System.Drawing.Point(125, 159);
             this.passwordText.MaxLength = 32767;
             this.passwordText.Name = "passwordText";
             this.passwordText.PasswordChar = '*';
@@ -86,34 +85,9 @@
             this.passwordText.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.passwordText.UseSelectable = true;
             // 
-            // loginBtn
-            // 
-            this.loginBtn.Location = new System.Drawing.Point(125, 169);
-            this.loginBtn.Name = "loginBtn";
-            this.loginBtn.Size = new System.Drawing.Size(127, 23);
-            this.loginBtn.TabIndex = 4;
-            this.loginBtn.Text = "Login";
-            this.loginBtn.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.loginBtn.UseSelectable = true;
-            this.loginBtn.Click += new System.EventHandler(this.metroButton1_Click);
-            // 
-            // passwordError
-            // 
-            this.passwordError.AutoSize = true;
-            this.passwordError.ForeColor = System.Drawing.Color.Maroon;
-            this.passwordError.Location = new System.Drawing.Point(258, 128);
-            this.passwordError.Name = "passwordError";
-            this.passwordError.Size = new System.Drawing.Size(191, 19);
-            this.passwordError.Style = MetroFramework.MetroColorStyle.Magenta;
-            this.passwordError.TabIndex = 5;
-            this.passwordError.Text = "Wrong username or password!";
-            this.passwordError.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.passwordError.UseCustomForeColor = true;
-            this.passwordError.Visible = false;
-            // 
             // registerBtn
             // 
-            this.registerBtn.Location = new System.Drawing.Point(222, 234);
+            this.registerBtn.Location = new System.Drawing.Point(125, 202);
             this.registerBtn.Name = "registerBtn";
             this.registerBtn.Size = new System.Drawing.Size(127, 23);
             this.registerBtn.Style = MetroFramework.MetroColorStyle.Green;
@@ -123,36 +97,48 @@
             this.registerBtn.UseSelectable = true;
             this.registerBtn.Click += new System.EventHandler(this.registerBtn_Click);
             // 
-            // metroLabel1
+            // nameText
             // 
-            this.metroLabel1.AutoSize = true;
-            this.metroLabel1.Location = new System.Drawing.Point(121, 234);
-            this.metroLabel1.Name = "metroLabel1";
-            this.metroLabel1.Size = new System.Drawing.Size(81, 19);
-            this.metroLabel1.TabIndex = 7;
-            this.metroLabel1.Text = "No account?";
-            this.metroLabel1.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.nameText.Lines = new string[0];
+            this.nameText.Location = new System.Drawing.Point(125, 74);
+            this.nameText.MaxLength = 32767;
+            this.nameText.Name = "nameText";
+            this.nameText.PasswordChar = '\0';
+            this.nameText.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.nameText.SelectedText = "";
+            this.nameText.Size = new System.Drawing.Size(127, 23);
+            this.nameText.TabIndex = 7;
+            this.nameText.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.nameText.UseSelectable = true;
             // 
-            // LoginForm
+            // nameLabel
             // 
-            this.AcceptButton = this.loginBtn;
+            this.nameLabel.AutoSize = true;
+            this.nameLabel.Location = new System.Drawing.Point(57, 74);
+            this.nameLabel.Name = "nameLabel";
+            this.nameLabel.Size = new System.Drawing.Size(48, 19);
+            this.nameLabel.TabIndex = 8;
+            this.nameLabel.Text = "Name:";
+            this.nameLabel.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
+            // RegisterForm
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackImagePadding = new System.Windows.Forms.Padding(200, 10, 0, 0);
             this.BackMaxSize = 50;
-            this.ClientSize = new System.Drawing.Size(464, 280);
-            this.Controls.Add(this.metroLabel1);
+            this.ClientSize = new System.Drawing.Size(464, 248);
+            this.Controls.Add(this.nameLabel);
+            this.Controls.Add(this.nameText);
             this.Controls.Add(this.registerBtn);
-            this.Controls.Add(this.passwordError);
-            this.Controls.Add(this.loginBtn);
             this.Controls.Add(this.passwordText);
             this.Controls.Add(this.passwordLabel);
             this.Controls.Add(this.usernameText);
             this.Controls.Add(this.usernameLabel);
-            this.Name = "LoginForm";
+            this.Name = "RegisterForm";
             this.Resizable = false;
             this.Style = MetroFramework.MetroColorStyle.Green;
-            this.Text = "Diginotes - Welcome";
+            this.Text = "Diginotes - Welcome, new user";
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -165,10 +151,9 @@
         private MetroFramework.Controls.MetroTextBox usernameText;
         private MetroFramework.Controls.MetroLabel passwordLabel;
         private MetroFramework.Controls.MetroTextBox passwordText;
-        private MetroFramework.Controls.MetroButton loginBtn;
-        private MetroFramework.Controls.MetroLabel passwordError;
         private MetroFramework.Controls.MetroButton registerBtn;
-        private MetroFramework.Controls.MetroLabel metroLabel1;
+        private MetroFramework.Controls.MetroTextBox nameText;
+        private MetroFramework.Controls.MetroLabel nameLabel;
     }
 }
 

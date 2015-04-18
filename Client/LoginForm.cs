@@ -56,5 +56,24 @@ namespace Client
                 passwordError.Visible = true;
             }
         }
+
+        private void registerBtn_Click(object sender, EventArgs e)
+        {
+            RegisterForm registerForm = new RegisterForm(this);
+            registerForm.Show();
+            this.Hide();
+        }
+
+        public void Register(string name, string nickname, string password)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { Register(name, nickname, password); });
+                return;
+            }
+
+            // call server
+            /////////////////////////////
+        }
     }
 }
