@@ -357,14 +357,14 @@
             series1.Legend = "Legend1";
             series1.Name = "Quotation";
             this.quotationChart.Series.Add(series1);
-            this.quotationChart.Size = new System.Drawing.Size(264, 175);
+            this.quotationChart.Size = new System.Drawing.Size(272, 175);
             this.quotationChart.TabIndex = 20;
             this.quotationChart.Text = "chart1";
             // 
             // quotationTimer
             // 
             this.quotationTimer.Enabled = true;
-            this.quotationTimer.Interval = 3000;
+            this.quotationTimer.Interval = 60000;
             this.quotationTimer.Tick += new System.EventHandler(this.quotationTimer_Tick);
             // 
             // AppForm

@@ -46,6 +46,11 @@ namespace Client
         }
 
 
+        public bool Register(string name, string nickname, string password)
+        {
+            return true;
+        }
+
         /* Login, server returns null when user is not found. */
         public bool Login(string nickname, string password)
         {

@@ -38,10 +38,25 @@ namespace Client
         }
 
 
-        private void metroButton1_Click(object sender, EventArgs e)
+        private void ResetErrors()
         {
-            string nickname = usernameText.Text;
-            string password = passwordText.Text;
+            loginError.Visible = false;
+            registerError.Visible = false;
+        }
+
+
+        private void Login()
+        {
+            ResetErrors();
+
+            string nickname = loginNicknameText.Text;
+            string password = loginPasswordText.Text;
+
+            if (nickname == "" || password == "")
+            {
+                loginError.Visible = true;
+                return;
+            }
 
             bool login = client.Login(nickname, password);
 
@@ -53,27 +68,58 @@ namespace Client
             }
             else
             {
-                passwordError.Visible = true;
+                loginError.Visible = true;
             }
         }
 
-        private void registerBtn_Click(object sender, EventArgs e)
-        {
-            RegisterForm registerForm = new RegisterForm(this);
-            registerForm.Show();
-            this.Hide();
-        }
 
-        public void Register(string name, string nickname, string password)
+        private void Register()
         {
-            if (InvokeRequired)
+            ResetErrors();
+
+            string name = registerNameText.Text;
+            string nickname = registerNicknameText.Text;
+            string password = registerPasswordText.Text;
+
+            if (name == "" || nickname == "" || password == "")
             {
-                BeginInvoke((MethodInvoker)delegate { Register(name, nickname, password); });
+                registerError.Visible = true;
                 return;
             }
 
-            // call server
-            /////////////////////////////
+            bool register = client.Register(name, nickname, password);
+        }
+
+
+        private void loginBtn_Click(object sender, EventArgs e)
+        {
+            Login();
+        }
+
+
+        private void registerBtn_Click(object sender, EventArgs e)
+        {
+            Register();
+        }
+
+
+        private void loginField_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                Login();
+                e.Handled = true; // disables "ding" sound on enter/newline press
+            } 
+        }
+
+
+        private void registerField_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                Register();
+                e.Handled = true;
+            } 
         }
     }
 }

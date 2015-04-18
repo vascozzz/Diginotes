@@ -36,6 +36,7 @@ namespace Client
             this.client = client;
             client.SetAppForm(this);
 
+            // set initial display fields
             nameText.Text += client.data.name;
             quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
@@ -217,7 +218,7 @@ namespace Client
             if (e.KeyChar == (char) Keys.Return)
             {
                 RequestBuyExchange();
-                e.Handled = true; // disables "ding" sound on enter/newline press
+                e.Handled = true; 
             }
         }
 
@@ -248,10 +249,6 @@ namespace Client
             canEdit = true;
 
             UpdateEconomy();
-            
-            //nameText.Text = "Some client initiated a new exchange";
-            //MetroTaskWindow.ShowTaskWindow(this, "SubControl in TaskWindow", new UserControl(), 10);
-            //MetroMessageBox.Show(this, "Yeah, m8? U wanna 1v1?", "New exchange took place", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
         }
 
 
@@ -283,8 +280,10 @@ namespace Client
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
         }
 
+
         private void historyGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            // the event is also called on programmatic changes, so we need a boolean to disable the event on such cases
             if (!canEdit)
             {
                 return;
@@ -296,16 +295,17 @@ namespace Client
 
             ExchangeData exchange = new ExchangeData();
 
-            foreach(ExchangeData ex in client.data.exchanges)
+            foreach (ExchangeData ex in client.data.exchanges) { 
                 if (id == ex.exchange_id)
                 {
                     exchange = ex;
                     break;
                 }
+            }
 
             int oldValue = exchange.diginotes;
-
             int updatedTo;
+
             try
             {
                 updatedTo = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value);
@@ -320,7 +320,6 @@ namespace Client
                 return;
             }
 
-            // the event is also called on programmatic changes, so we need a boolean to disable the event on such cases
             int fulfilled = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["fulfilled"].Value);
 
             if (updatedTo < 0 || updatedTo < fulfilled)
@@ -346,11 +345,10 @@ namespace Client
             client.EditExchange(exchange);
         }
 
+
         private void quotationTimer_Tick(object sender, EventArgs e)
         {
-            Random rnd = new Random();
-            int a = rnd.Next(0, 3);
-            quotationChart.Series[0].Points.Add(a);
+            quotationChart.Series[0].Points.Add(client.data.quotation);
         }
     }
 }
