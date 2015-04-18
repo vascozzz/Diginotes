@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Forms;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -276,18 +277,65 @@ namespace Client
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
         }
 
-
         private void historyGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            // the event is also called on programmatic changes, so we need a boolean to disable the event on such cases
             if (!canEdit)
             {
                 return;
             }
 
             int id = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["id"].Value);
-            int updatedTo = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value);
-            nameText.Text = "Updated exchange " + id + " to " + updatedTo + " diginotes.";
+
+            ExchangeData exchange = new ExchangeData();
+
+            foreach(ExchangeData ex in client.data.exchanges)
+                if (id == ex.exchange_id)
+                {
+                    exchange = ex;
+                    break;
+                }
+
+            int oldValue = exchange.diginotes;
+
+            int updatedTo;
+            try
+            {
+                updatedTo = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value);
+            }
+            catch (Exception err)
+            {
+                sellError.Text = err.Message;
+                sellError.Visible = true;
+                canEdit = false;
+                historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value = oldValue;
+                canEdit = true;
+                return;
+            }
+
+            // the event is also called on programmatic changes, so we need a boolean to disable the event on such cases
+            int fulfilled = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["fulfilled"].Value);
+
+            if (updatedTo < 0 || updatedTo < fulfilled)
+            {
+                sellError.Text = "Invalid Value";
+                sellError.Visible = true;
+                canEdit = false;
+                historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value = oldValue;
+                canEdit = true;
+                return;
+            }
+
+            bool done = updatedTo == fulfilled;
+
+            canEdit = false;
+            historyGrid.Rows[e.RowIndex].Cells[4].Value = done ? "yes" : "no";
+            canEdit = true;
+
+            exchange.diginotes = updatedTo;
+            
+            sellError.Visible = false;
+
+            client.EditExchange(exchange);
         }
     }
 }
