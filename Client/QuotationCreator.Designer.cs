@@ -47,13 +47,13 @@
             // quotationText
             // 
             this.quotationText.Lines = new string[0];
-            this.quotationText.Location = new System.Drawing.Point(23, 126);
+            this.quotationText.Location = new System.Drawing.Point(25, 126);
             this.quotationText.MaxLength = 32767;
             this.quotationText.Name = "quotationText";
             this.quotationText.PasswordChar = '\0';
             this.quotationText.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.quotationText.SelectedText = "";
-            this.quotationText.Size = new System.Drawing.Size(254, 23);
+            this.quotationText.Size = new System.Drawing.Size(252, 23);
             this.quotationText.TabIndex = 1;
             this.quotationText.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.quotationText.UseSelectable = true;
@@ -65,6 +65,7 @@
             this.quotationBtn.Size = new System.Drawing.Size(104, 23);
             this.quotationBtn.TabIndex = 2;
             this.quotationBtn.Text = "Confirm";
+            this.quotationBtn.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.quotationBtn.UseSelectable = true;
             this.quotationBtn.Click += new System.EventHandler(this.quotationBtn_Click);
             // 

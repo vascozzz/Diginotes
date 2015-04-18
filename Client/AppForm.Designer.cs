@@ -57,6 +57,7 @@
             this.generalError = new MetroFramework.Controls.MetroLabel();
             this.quotationChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.quotationTimer = new System.Windows.Forms.Timer(this.components);
+            this.quotationChartLabel = new MetroFramework.Controls.MetroLabel();
             ((System.ComponentModel.ISupportInitialize)(this.historyGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.quotationChart)).BeginInit();
             this.SuspendLayout();
@@ -292,7 +293,7 @@
             // quotationUpdateText
             // 
             this.quotationUpdateText.AutoSize = true;
-            this.quotationUpdateText.Location = new System.Drawing.Point(525, 52);
+            this.quotationUpdateText.Location = new System.Drawing.Point(628, 52);
             this.quotationUpdateText.Name = "quotationUpdateText";
             this.quotationUpdateText.Size = new System.Drawing.Size(138, 19);
             this.quotationUpdateText.TabIndex = 16;
@@ -349,13 +350,13 @@
             this.quotationChart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.quotationChart.Legends.Add(legend1);
-            this.quotationChart.Location = new System.Drawing.Point(24, 360);
+            this.quotationChart.Location = new System.Drawing.Point(23, 384);
             this.quotationChart.Name = "quotationChart";
             this.quotationChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
             series1.Legend = "Legend1";
-            series1.Name = "Quotation";
+            series1.Name = "Value";
             this.quotationChart.Series.Add(series1);
             this.quotationChart.Size = new System.Drawing.Size(272, 175);
             this.quotationChart.TabIndex = 20;
@@ -367,11 +368,23 @@
             this.quotationTimer.Interval = 60000;
             this.quotationTimer.Tick += new System.EventHandler(this.quotationTimer_Tick);
             // 
+            // quotationChartLabel
+            // 
+            this.quotationChartLabel.AutoSize = true;
+            this.quotationChartLabel.Location = new System.Drawing.Point(23, 362);
+            this.quotationChartLabel.Name = "quotationChartLabel";
+            this.quotationChartLabel.Size = new System.Drawing.Size(287, 19);
+            this.quotationChartLabel.Style = MetroFramework.MetroColorStyle.Green;
+            this.quotationChartLabel.TabIndex = 21;
+            this.quotationChartLabel.Text = "Watch as the current market quotation changes:";
+            this.quotationChartLabel.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
             // AppForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(775, 565);
+            this.Controls.Add(this.quotationChartLabel);
             this.Controls.Add(this.quotationChart);
             this.Controls.Add(this.generalError);
             this.Controls.Add(this.sellError);
@@ -429,5 +442,6 @@
         private MetroFramework.Controls.MetroLabel generalError;
         private System.Windows.Forms.DataVisualization.Charting.Chart quotationChart;
         private System.Windows.Forms.Timer quotationTimer;
+        private MetroFramework.Controls.MetroLabel quotationChartLabel;
     }
 }

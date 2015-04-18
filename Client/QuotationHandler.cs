@@ -13,9 +13,29 @@ namespace Client
 {
     public partial class QuotationHandler : MetroForm
     {
+        private Client client;
+
         public QuotationHandler()
         {
             InitializeComponent();
+        }
+
+        public QuotationHandler(Client client)
+        {
+            InitializeComponent();
+            this.client = client;
+        }
+
+        private void acceptBtn_Click(object sender, EventArgs e)
+        {
+            // do... ?
+            this.Close();
+        }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            // remove all pending others, tell server, update appform
+            this.Close();
         }
     }
 }

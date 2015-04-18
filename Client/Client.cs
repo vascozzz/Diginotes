@@ -119,6 +119,16 @@ namespace Client
         }
 
 
+        /* Asks the server to update an existing exchange. */
+        public void EditExchange(ExchangeData exchange)
+        {
+            ClientData clientData = remObj.EditExchange(exchange);
+
+            UpdateEconomy(clientData);
+            appForm.UpdateEconomy();
+        }
+
+
         /* Callback triggered when the server pairs up two exchanges. */
         public void OnNewExchange(UpdateData update)
         {
@@ -151,15 +161,20 @@ namespace Client
         public void OnNewQuotation(float quotation)
         {
             data.quotation = quotation;
+
+            foreach (ExchangeData exchange in data.exchanges)
+            {
+                // at least one hasn't been fulfilled yet
+                if (exchange.diginotes != exchange.diginotes_fulfilled)
+                {
+                    //Debug.WriteLine("We need to accept or reject the new quotation");
+                    //QuotationHandler quotationHandler = new QuotationHandler(this);
+                    //quotationHandler.Show();
+                    break;
+                }
+            }
+
             appForm.UpdateQuotation();
-        }
-
-        public void EditExchange(ExchangeData exchange)
-        {
-            ClientData clientData = remObj.EditExchange(exchange);
-
-            UpdateEconomy(clientData);
-            appForm.UpdateEconomy();
         }
     }
 }
