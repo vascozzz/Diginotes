@@ -224,4 +224,13 @@ class DatabaseLayer
             }
         }
     }
+
+    public void UpdateExchange(int id, int updatedTo)
+    {
+        string sql = "UPDATE exchange SET diginotes = @updatedTo WHERE exchange_id = @id";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@id", id);
+        command.Parameters.AddWithValue("@updatedTo", updatedTo);
+        command.ExecuteNonQuery();
+    }
 }

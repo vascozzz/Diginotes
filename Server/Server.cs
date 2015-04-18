@@ -154,4 +154,21 @@ public class RemObj : MarshalByRefObject, IRemObj
         UpdateData update = new UpdateData(clientData, exchange);
         return update;
     }
+
+    public ClientData EditExchange(ExchangeData exchange)
+    {
+        Console.WriteLine("\nClient " + exchange.user_id+ " called EditExchange.");
+        db.UpdateExchange(exchange.exchange_id, exchange.diginotes);
+
+        ClientData clientData = db.GetClientData(exchange.user_id);
+        clientData.diginotes = db.GetDiginotes(clientData.user_id);
+        clientData.quotation = quotation;
+        clientData.diginotesAvlb = clientData.diginotes;
+
+        // update balance
+        List<ExchangeData> exchanges = db.GetExchanges(clientData.user_id);
+        clientData.UpdateAvailabilities(exchanges);
+
+        return clientData;
+    }
 }

@@ -17,6 +17,7 @@ public interface IRemObj
     void Logout(string nickname);
     UpdateData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes);
     void SetQuotation(float quotation);
+    ClientData EditExchange(ExchangeData exchange);
 }
 
 public class Intermediate : MarshalByRefObject

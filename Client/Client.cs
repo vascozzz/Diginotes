@@ -39,7 +39,7 @@ namespace Client
             inter = new Intermediate();
             inter.NewExchange += OnNewExchange;
             inter.NewQuotation += OnNewQuotation;
-
+            
             remObj = (IRemObj)GetRemote.New(typeof(IRemObj));
             remObj.NewExchange += inter.TriggerNewExchange;
             remObj.NewQuotation += inter.TriggerNewQuotation;
@@ -147,6 +147,14 @@ namespace Client
         {
             data.quotation = quotation;
             appForm.UpdateQuotation();
+        }
+
+        public void EditExchange(ExchangeData exchange)
+        {
+            ClientData clientData = remObj.EditExchange(exchange);
+
+            UpdateEconomy(clientData);
+            appForm.UpdateEconomy();
         }
     }
 }

@@ -11,3 +11,13 @@ C:\Programming\C#\Diginotes\Server\bin\Debug\System.Data.SQLite.xml
 C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.Design.dll
 C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.dll
 C:\Programming\C#\Diginotes\Server\bin\Debug\MetroFramework.Fonts.dll
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\Server.exe.config
+D:\Domus\Programming\C#\workspace\Diginotes\Server\obj\Debug\Server.exe
+D:\Domus\Programming\C#\workspace\Diginotes\Server\obj\Debug\Server.pdb
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\Server.exe
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\Server.pdb
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\Shared.dll
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\System.Data.SQLite.dll
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\Shared.pdb
+D:\Domus\Programming\C#\workspace\Diginotes\Server\bin\Debug\System.Data.SQLite.xml
+D:\Domus\Programming\C#\workspace\Diginotes\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
