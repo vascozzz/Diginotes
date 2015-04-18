@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Forms;
 using System.Diagnostics;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Client
 {
@@ -38,6 +39,10 @@ namespace Client
             nameText.Text += client.data.name;
             quotationText.Text = client.data.quotation.ToString() + "€ each";
             quotationUpdateText.Text = "Last updated at " + DateTime.Now.ToShortTimeString();
+
+            // start quotation graph
+            quotationChart.Series[0].Points.Add(1);
+            quotationChart.Series[0].Points.Add(client.data.quotation);
 
             // create columns for history grid
             historyGrid.ReadOnly = false;
@@ -91,6 +96,7 @@ namespace Client
         {
             buyError.Visible = false;
             sellError.Visible = false;
+            generalError.Visible = false;
         }
 
 
@@ -284,6 +290,8 @@ namespace Client
                 return;
             }
 
+            ResetErrors();
+
             int id = Convert.ToInt32(historyGrid.Rows[e.RowIndex].Cells["id"].Value);
 
             ExchangeData exchange = new ExchangeData();
@@ -304,8 +312,8 @@ namespace Client
             }
             catch (Exception err)
             {
-                sellError.Text = err.Message;
-                sellError.Visible = true;
+                generalError.Text = err.Message;
+                generalError.Visible = true;
                 canEdit = false;
                 historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value = oldValue;
                 canEdit = true;
@@ -317,8 +325,8 @@ namespace Client
 
             if (updatedTo < 0 || updatedTo < fulfilled)
             {
-                sellError.Text = "Invalid Value";
-                sellError.Visible = true;
+                generalError.Text = "Invalid Value";
+                generalError.Visible = true;
                 canEdit = false;
                 historyGrid.Rows[e.RowIndex].Cells["diginotes"].Value = oldValue;
                 canEdit = true;
@@ -336,6 +344,13 @@ namespace Client
             sellError.Visible = false;
 
             client.EditExchange(exchange);
+        }
+
+        private void quotationTimer_Tick(object sender, EventArgs e)
+        {
+            Random rnd = new Random();
+            int a = rnd.Next(0, 3);
+            quotationChart.Series[0].Points.Add(a);
         }
     }
 }

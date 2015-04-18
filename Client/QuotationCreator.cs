@@ -59,6 +59,7 @@ namespace Client
             }
 
             client.SetQuotation(quotation);
+            this.Close();
         }
     }
 }
