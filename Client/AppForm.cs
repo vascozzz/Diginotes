@@ -268,6 +268,24 @@ namespace Client
         }
 
 
+        public void UpdateExchanges()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { UpdateExchanges(); });
+                return;
+            }
+
+            historyCount = 0;
+
+            canEdit = false;
+            historyGrid.Rows.Clear();
+            canEdit = true;
+
+            InitHistory();
+        }
+
+
         public void UpdateQuotation()
         {
             if (InvokeRequired)
@@ -349,6 +367,18 @@ namespace Client
         private void quotationTimer_Tick(object sender, EventArgs e)
         {
             quotationChart.Series[0].Points.Add(client.data.quotation);
+        }
+
+        public void CreateQuotationHandler()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate { CreateQuotationHandler(); });
+                return;
+            }
+
+            QuotationHandler quotationHandler = new QuotationHandler(client);
+            quotationHandler.Show();
         }
     }
 }

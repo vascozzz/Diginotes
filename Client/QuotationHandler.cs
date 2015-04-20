@@ -14,6 +14,7 @@ namespace Client
     public partial class QuotationHandler : MetroForm
     {
         private Client client;
+        private int msTimeout = 30;
 
         public QuotationHandler()
         {
@@ -23,19 +24,34 @@ namespace Client
         public QuotationHandler(Client client)
         {
             InitializeComponent();
+
             this.client = client;
+            quotationTimerLabel.Text = msTimeout.ToString();
         }
 
         private void acceptBtn_Click(object sender, EventArgs e)
         {
-            // do... ?
+            client.UnblockExchanges();
             this.Close();
         }
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            // remove all pending others, tell server, update appform
+            client.RemoveExchanges();
             this.Close();
+        }
+
+        private void quotationTimer_Tick(object sender, EventArgs e)
+        {
+            if (msTimeout == 0)
+            {
+                this.Close();
+            }
+            else
+            {
+                quotationTimerLabel.Text = msTimeout.ToString();
+                msTimeout--;
+            } 
         }
     }
 }

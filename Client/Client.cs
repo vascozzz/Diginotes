@@ -48,7 +48,8 @@ namespace Client
 
         public bool Register(string name, string nickname, string password)
         {
-            return true;
+            data = remObj.Register(name, nickname, password);
+            return (data != null);
         }
 
         /* Login, server returns null when user is not found. */
@@ -115,7 +116,7 @@ namespace Client
         /* Sends a new quotation to the server. */
         public void SetQuotation(float quotation)
         {
-            remObj.SetQuotation(quotation);
+            remObj.SetQuotation(data.user_id, quotation);
         }
 
 
@@ -129,11 +130,29 @@ namespace Client
         }
 
 
+        /* Accepts new quotation, unblocking all unfulfilled exchanges. */
+        public void UnblockExchanges()
+        {
+            remObj.UnblockClientExchanges(data.user_id);
+        }
+
+
+        /* Rejects new quotation, marking all unfulfilled exchanges as done. */
+        public void RemoveExchanges()
+        {
+            ClientData clientData = remObj.RemoveClientExchanges(data.user_id);
+
+            UpdateEconomy(clientData);
+            appForm.UpdateEconomy();
+
+            data.exchanges = clientData.exchanges;
+            appForm.UpdateExchanges();
+        }
+
+
         /* Callback triggered when the server pairs up two exchanges. */
         public void OnNewExchange(UpdateData update)
         {
-            Debug.WriteLine("Some client requested a new exchange.");
-
             if (appForm == null || update.clientData.user_id != data.user_id) 
             {
                 return;
@@ -158,23 +177,28 @@ namespace Client
 
         
         /* Callback triggered when a new quotation has been set on the server. */
-        public void OnNewQuotation(float quotation)
+        public void OnNewQuotation(int user_id, float quotation)
         {
             data.quotation = quotation;
+            appForm.UpdateQuotation();
+
+            // quotation changed, can update displayed available balance
+            data.UpdateAvailabilities(data.exchanges);
+
+            if (appForm == null || user_id == data.user_id)
+            {
+                return;
+            }
 
             foreach (ExchangeData exchange in data.exchanges)
             {
                 // at least one hasn't been fulfilled yet
                 if (exchange.diginotes != exchange.diginotes_fulfilled)
                 {
-                    //Debug.WriteLine("We need to accept or reject the new quotation");
-                    //QuotationHandler quotationHandler = new QuotationHandler(this);
-                    //quotationHandler.Show();
+                    appForm.CreateQuotationHandler();
                     break;
                 }
             }
-
-            appForm.UpdateQuotation();
         }
     }
 }

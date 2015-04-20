@@ -28,18 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.quotationLabel1 = new MetroFramework.Controls.MetroLabel();
             this.quotationLabel2 = new MetroFramework.Controls.MetroLabel();
             this.quotationLabel3 = new MetroFramework.Controls.MetroLabel();
             this.quotationLabel4 = new MetroFramework.Controls.MetroLabel();
             this.acceptBtn = new MetroFramework.Controls.MetroButton();
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
+            this.quotationTimer = new System.Windows.Forms.Timer(this.components);
+            this.quotationTimerLabel = new MetroFramework.Controls.MetroLabel();
             this.SuspendLayout();
             // 
             // quotationLabel1
             // 
             this.quotationLabel1.AutoSize = true;
-            this.quotationLabel1.Location = new System.Drawing.Point(23, 51);
+            this.quotationLabel1.Location = new System.Drawing.Point(23, 60);
             this.quotationLabel1.Name = "quotationLabel1";
             this.quotationLabel1.Size = new System.Drawing.Size(263, 19);
             this.quotationLabel1.TabIndex = 0;
@@ -49,7 +52,7 @@
             // quotationLabel2
             // 
             this.quotationLabel2.AutoSize = true;
-            this.quotationLabel2.Location = new System.Drawing.Point(23, 103);
+            this.quotationLabel2.Location = new System.Drawing.Point(23, 108);
             this.quotationLabel2.Name = "quotationLabel2";
             this.quotationLabel2.Size = new System.Drawing.Size(268, 19);
             this.quotationLabel2.TabIndex = 1;
@@ -59,7 +62,7 @@
             // quotationLabel3
             // 
             this.quotationLabel3.AutoSize = true;
-            this.quotationLabel3.Location = new System.Drawing.Point(20, 122);
+            this.quotationLabel3.Location = new System.Drawing.Point(23, 127);
             this.quotationLabel3.Name = "quotationLabel3";
             this.quotationLabel3.Size = new System.Drawing.Size(235, 19);
             this.quotationLabel3.TabIndex = 2;
@@ -69,7 +72,7 @@
             // quotationLabel4
             // 
             this.quotationLabel4.AutoSize = true;
-            this.quotationLabel4.Location = new System.Drawing.Point(23, 141);
+            this.quotationLabel4.Location = new System.Drawing.Point(23, 146);
             this.quotationLabel4.Name = "quotationLabel4";
             this.quotationLabel4.Size = new System.Drawing.Size(200, 19);
             this.quotationLabel4.TabIndex = 3;
@@ -98,11 +101,28 @@
             this.metroButton1.UseSelectable = true;
             this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
             // 
+            // quotationTimer
+            // 
+            this.quotationTimer.Enabled = true;
+            this.quotationTimer.Interval = 1000;
+            this.quotationTimer.Tick += new System.EventHandler(this.quotationTimer_Tick);
+            // 
+            // quotationTimerLabel
+            // 
+            this.quotationTimerLabel.AutoSize = true;
+            this.quotationTimerLabel.Location = new System.Drawing.Point(261, 29);
+            this.quotationTimerLabel.Name = "quotationTimerLabel";
+            this.quotationTimerLabel.Size = new System.Drawing.Size(25, 19);
+            this.quotationTimerLabel.TabIndex = 6;
+            this.quotationTimerLabel.Text = "XX";
+            this.quotationTimerLabel.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
             // QuotationHandler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(306, 247);
+            this.Controls.Add(this.quotationTimerLabel);
             this.Controls.Add(this.metroButton1);
             this.Controls.Add(this.acceptBtn);
             this.Controls.Add(this.quotationLabel4);
@@ -126,5 +146,7 @@
         private MetroFramework.Controls.MetroLabel quotationLabel4;
         private MetroFramework.Controls.MetroButton acceptBtn;
         private MetroFramework.Controls.MetroButton metroButton1;
+        private System.Windows.Forms.Timer quotationTimer;
+        private MetroFramework.Controls.MetroLabel quotationTimerLabel;
     }
 }

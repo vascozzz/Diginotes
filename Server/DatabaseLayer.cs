@@ -59,14 +59,39 @@ class DatabaseLayer
 
     public bool Register(string name, string nickname, string password)
     {
-        string sql = "INSERT INTO USER(name, nickname, password) VALUES(@name, @nickname, @password)";
+        string sql = "SELECT * from user WHERE nickname = @nickname";
         SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@nickname", nickname);
+        SQLiteDataReader data = command.ExecuteReader();
+
+        if (data.Read())
+        {
+            return false;
+        }
+
+        sql = "INSERT INTO USER(name, nickname, password) VALUES(@name, @nickname, @password)";
+        command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@name", name);
         command.Parameters.AddWithValue("@nickname", nickname);
         command.Parameters.AddWithValue("@password", password);
         command.ExecuteNonQuery();
 
-        // TODO create balance, diginotes, etc
+        sql = "SELECT user_id FROM user WHERE nickname = @nickname";
+        command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@nickname", nickname);
+        data = command.ExecuteReader();
+        data.Read();
+        int user_id = Convert.ToInt32((long) data["user_id"]);
+
+        for (int i = 0; i < 20; i++)
+        {
+            sql = "INSERT INTO diginote VALUES(null, @user_id, @value)";
+            command = new SQLiteCommand(sql, db);
+            command.Parameters.AddWithValue("@user_id", user_id);
+            command.Parameters.AddWithValue("@value", 1);
+            command.ExecuteNonQuery();
+        }
+ 
         return true;
     }
 
@@ -117,7 +142,7 @@ class DatabaseLayer
         int exchange_id = -1;
 
         // insert new exchange
-        string sql = "INSERT INTO exchange VALUES(null, @user_id, @type, @diginotes, @diginotes_fulfilled, @created)";
+        string sql = "INSERT INTO exchange VALUES(null, @user_id, @type, @diginotes, @diginotes_fulfilled, @created, 0)";
         SQLiteCommand command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@user_id", user_id);
         command.Parameters.AddWithValue("@type", exchangeType.ToString());
@@ -143,7 +168,7 @@ class DatabaseLayer
         int user_id = exchange.user_id;
         ExchangeType type = exchange.type == ExchangeType.BUY ? ExchangeType.SELL : ExchangeType.BUY;
 
-        string sql = "SELECT * FROM exchange WHERE user_id != @userId AND type = @matchingType AND diginotes - diginotes_fulfilled > 0 ORDER BY created ASC";
+        string sql = "SELECT * FROM exchange WHERE blocked = 0 AND user_id != @userId AND type = @matchingType AND diginotes - diginotes_fulfilled > 0 ORDER BY created ASC";
         SQLiteCommand command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@userId", user_id.ToString());
         command.Parameters.AddWithValue("@matchingType", type.ToString());
@@ -231,6 +256,47 @@ class DatabaseLayer
         SQLiteCommand command = new SQLiteCommand(sql, db);
         command.Parameters.AddWithValue("@id", id);
         command.Parameters.AddWithValue("@updatedTo", updatedTo);
+        command.ExecuteNonQuery();
+    }
+
+
+    /* Blocks all non-completed exchanges, except the user's. */
+    public void BlockAllExchanges(int user_id, ExchangeType type)
+    {
+        string sql = "UPDATE exchange SET blocked = 1 WHERE user_id != @user_id AND type = @type AND diginotes - diginotes_fulfilled > 0";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
+        command.Parameters.AddWithValue("@type", type.ToString());
+        command.ExecuteNonQuery();
+    }
+
+    public void UnblockAllExchanges()
+    {
+        string sql = "UPDATE exchange SET blocked = 0 WHERE diginotes - diginotes_fulfilled > 0";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.ExecuteNonQuery();
+    }
+
+    public void UnblockClientExchanges(int user_id)
+    {
+        string sql = "UPDATE exchange SET blocked = 0 WHERE user_id = @user_id AND diginotes - diginotes_fulfilled > 0";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
+        command.ExecuteNonQuery();
+    }
+
+    public void RemoveClientExchanges(int user_id)
+    {
+        // mark all exchanges as fulfilled
+        string sql = "UPDATE exchange SET diginotes = diginotes_fulfilled WHERE user_id = @user_id AND diginotes - diginotes_fulfilled > 0";
+        SQLiteCommand command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
+        command.ExecuteNonQuery();
+
+        // delete completely unfulfilled exchanges
+        sql = "DELETE FROM exchange WHERE user_id = @user_id AND diginotes = 0";
+        command = new SQLiteCommand(sql, db);
+        command.Parameters.AddWithValue("@user_id", user_id);
         command.ExecuteNonQuery();
     }
 }

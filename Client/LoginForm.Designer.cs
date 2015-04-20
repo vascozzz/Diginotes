@@ -198,7 +198,7 @@
             this.registerPasswordText.Location = new System.Drawing.Point(433, 160);
             this.registerPasswordText.MaxLength = 32767;
             this.registerPasswordText.Name = "registerPasswordText";
-            this.registerPasswordText.PasswordChar = '\0';
+            this.registerPasswordText.PasswordChar = '*';
             this.registerPasswordText.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.registerPasswordText.SelectedText = "";
             this.registerPasswordText.Size = new System.Drawing.Size(127, 23);

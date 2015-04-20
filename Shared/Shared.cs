@@ -5,19 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 public delegate void ExchangeHandler(UpdateData update);
-public delegate void QuotationHandler(float quotation);
+public delegate void QuotationHandler(int user_id, float quotation);
 
 public interface IRemObj
 {
     event ExchangeHandler NewExchange;
     event QuotationHandler NewQuotation;
 
-    bool Register(String name, String nickname, String password);
+    ClientData Register(String name, String nickname, String password);
     ClientData Login(string nickname, string password);
     void Logout(string nickname);
     UpdateData RequestExchange(int user_id, ExchangeType exchangeType, int diginotes);
-    void SetQuotation(float quotation);
+    void SetQuotation(int user_id, float quotation);
     ClientData EditExchange(ExchangeData exchange);
+    void UnblockClientExchanges(int user_id);
+    ClientData RemoveClientExchanges(int user_id);
 }
 
 public class Intermediate : MarshalByRefObject
@@ -30,9 +32,9 @@ public class Intermediate : MarshalByRefObject
         NewExchange(update);
     }
 
-    public void TriggerNewQuotation(float quotation)
+    public void TriggerNewQuotation(int user_id, float quotation)
     {
-        NewQuotation(quotation);
+        NewQuotation(user_id, quotation);
     }
 }
 
@@ -67,7 +69,7 @@ public class ClientData
         {
             if (exchange.type == ExchangeType.BUY)
             {
-                balanceAvlb -= (exchange.diginotes * quotation) - (exchange.diginotes_fulfilled);
+                balanceAvlb -= (exchange.diginotes * quotation) - (exchange.diginotes_fulfilled * quotation);
             }
             else if (exchange.type == ExchangeType.SELL)
             {
@@ -82,7 +84,7 @@ public class ClientData
         {
             if (exchange.type == ExchangeType.BUY)
             {
-                balanceAvlb -= (exchange.diginotes * quotation) - (exchange.diginotes_fulfilled);
+                balanceAvlb -= (exchange.diginotes * quotation) - (exchange.diginotes_fulfilled * quotation);
             }
             else if (exchange.type == ExchangeType.SELL)
             {

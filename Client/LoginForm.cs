@@ -83,11 +83,24 @@ namespace Client
 
             if (name == "" || nickname == "" || password == "")
             {
+                registerError.Text = "Please fill in all the fields.";
                 registerError.Visible = true;
                 return;
             }
 
             bool register = client.Register(name, nickname, password);
+
+            if (register)
+            {
+                AppForm app = new AppForm(this, client);
+                app.Show();
+                this.Hide();
+            }
+            else
+            {
+                registerError.Text = "User already registered.";
+                registerError.Visible = true;
+            }
         }
 
 

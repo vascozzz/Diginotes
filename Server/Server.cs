@@ -4,6 +4,7 @@ using System.Runtime.Remoting;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Windows.Forms;
+using System.Timers;
 
 class Server
 {
@@ -23,24 +24,41 @@ public class RemObj : MarshalByRefObject, IRemObj
 
 
     // private vars
-    private DatabaseLayer db;
-    private float quotation = 1.0f;
+    private DatabaseLayer db;               // db layer
+    private float quotation = 1.0f;         // initial server quotation
+    private System.Timers.Timer timer;      // activated after quotation changes
 
 
     /* Open database connection once server is initiated by the first client. */
     public RemObj()
     {
         Console.WriteLine("\nServer constructor called.");
+
         db = new DatabaseLayer();
+        db.UnblockAllExchanges();
+
+        timer = new System.Timers.Timer();
+        timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+        timer.Interval = 20000;
+        timer.Enabled = false;
     }
 
 
     /* On register, should return all client info so user can be logged-in automatically. */
-    public bool Register(String name, String nickname, String password)
+    public ClientData Register(String name, String nickname, String password)
     {
         Console.WriteLine("\nA client called Register().");
 
-        return db.Register(name, nickname, password);
+        bool register = db.Register(name, nickname, password);
+
+        if (register)
+        {
+            return Login(nickname, password);
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
@@ -57,6 +75,7 @@ public class RemObj : MarshalByRefObject, IRemObj
             clientData.diginotesAvlb = clientData.diginotes;
             clientData.quotation = quotation;
             clientData.exchanges = db.GetExchanges(clientData.user_id);
+
             clientData.UpdateAvailabilities();
 
             return clientData;
@@ -76,12 +95,53 @@ public class RemObj : MarshalByRefObject, IRemObj
 
 
     /* Updates quotation set by a given user. */
-    public void SetQuotation(float quotation)
+    public void SetQuotation(int user_id, float quotation)
     {
-        Console.WriteLine("\nA new quotation has been set. Current value: " + quotation);
+        Console.WriteLine("\nA new quotation has been set by client " + user_id + ". Current value: " + quotation);
 
+        // block all unfulfilled exchanges that belong to other clients
+        if (quotation > this.quotation)
+        {
+            db.BlockAllExchanges(user_id, ExchangeType.BUY);
+        }
+        else
+        {
+            db.BlockAllExchanges(user_id, ExchangeType.SELL);
+        }
+
+        // set new quotation
         this.quotation = quotation;
-        NewQuotation(quotation);
+
+        // activate timer, so it unblock all exchanges at a later time
+        timer.Start();
+
+        NewQuotation(user_id, quotation);
+    }
+
+
+    /* Unblocks all unfulfilled exchanges of a given client. */
+    public void UnblockClientExchanges(int user_id)
+    {
+        Console.WriteLine("\nClient " + user_id + " accepted the new quotation (all exchanges unblocked).");
+
+        db.UnblockClientExchanges(user_id);
+    }
+
+
+    /* Removes all unfulfilled exchanges of a given client. */
+    public ClientData RemoveClientExchanges(int user_id)
+    {
+        Console.WriteLine("\nClient " + user_id + " rejected the new quotation (all exchanges retired).");
+
+        db.RemoveClientExchanges(user_id);
+
+        ClientData clientData = db.GetClientData(user_id);
+        clientData.diginotes = db.GetDiginotes(user_id);
+        clientData.quotation = quotation;
+        clientData.diginotesAvlb = clientData.diginotes;
+        clientData.exchanges = db.GetExchanges(clientData.user_id);
+
+        return clientData;
     }
 
 
@@ -155,9 +215,11 @@ public class RemObj : MarshalByRefObject, IRemObj
         return update;
     }
 
+    /* Updates the amount of digicoins for a given exchange. */
     public ClientData EditExchange(ExchangeData exchange)
     {
         Console.WriteLine("\nClient " + exchange.user_id+ " called EditExchange.");
+
         db.UpdateExchange(exchange.exchange_id, exchange.diginotes);
 
         ClientData clientData = db.GetClientData(exchange.user_id);
@@ -170,5 +232,13 @@ public class RemObj : MarshalByRefObject, IRemObj
         clientData.UpdateAvailabilities(exchanges);
 
         return clientData;
+    }
+
+    private void OnTimedEvent(object source, ElapsedEventArgs e)
+    {
+        Console.WriteLine("\nTimer has activated, all exchanges have been unblocked.");
+
+        db.UnblockAllExchanges();
+        timer.Stop();
     }
 }
